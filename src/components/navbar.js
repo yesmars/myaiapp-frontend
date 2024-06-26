@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import './navbar.css';
+import { useAuth } from './authContext';
 
 function AppNavbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, logout,login } = useAuth();
+
+  useEffect(() => {
+    // Check if token exists in local storage
+    const token = localStorage.getItem('token');
+    if (token) {
+      login();
+    }
+  }, [login]);
 
   return (
     <Navbar bg="light" expand="lg" className="bg-custom">
@@ -25,16 +34,10 @@ function AppNavbar() {
               </LinkContainer>
             </>
           ) : (
-            <LinkContainer to="/logout">
-              <Nav.Link>Logout</Nav.Link>  
+            <LinkContainer to="/home">
+            <Nav.Link onClick={logout}>Logout</Nav.Link>
             </LinkContainer>
           )}
-          <LinkContainer to="/vision">
-            <Nav.Link>Vision</Nav.Link>  
-          </LinkContainer>
-          <LinkContainer to="/merge">
-            <Nav.Link>MergeAI</Nav.Link>  
-          </LinkContainer>
           <LinkContainer to="/vanai">
             <Nav.Link>Van-AI</Nav.Link>  
           </LinkContainer>
@@ -45,4 +48,3 @@ function AppNavbar() {
 }
 
 export default AppNavbar;
-

@@ -7,10 +7,11 @@ import PrivateRoute from './components/PrivateRoute';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/home';
 import VanAi from './pages/vanAi';
-
+import { AuthProvider } from './components/authContext';
 function App() {
   return (
     <div>
+      <AuthProvider>
         <AppNavbar />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -20,6 +21,7 @@ function App() {
         {/* The HeroSection is now part of the Home route */}
         {/* Add other routes here */}
       </Routes>
+      </AuthProvider>
     </div>
   );
 }
