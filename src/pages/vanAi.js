@@ -16,6 +16,7 @@ const VanAi = () => {
             conversationDiv.scrollTop = conversationDiv.scrollHeight;
         }
     };
+    const fileInputRef = useRef(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,9 +38,11 @@ const VanAi = () => {
             newConversation.push({ type: 'loading', content: 'Loading...' });
             setConversation(newConversation);
             setQuestion('');
-            setImageInput(null);
+            setImageInput('');
             scrollToBottom();
-
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
             const formData = new FormData();
             formData.append('question', question);
             if (imageInput) {
@@ -61,6 +64,11 @@ const VanAi = () => {
                 body: formData
             });
 
+            if (!response.ok) {
+                setError('failed to send message');
+                return;
+            }
+
             const reader = response.body.getReader();
             let output = '';
             const botMsg = { type: 'bot', content: '' };
@@ -72,9 +80,16 @@ const VanAi = () => {
             while (true) {
                 const { done, value } = await reader.read();
                 output += new TextDecoder().decode(value || new Uint8Array(), { stream: !done });
-                const rawHtml = marked(output);
-                const cleanHtml = DOMPurify.sanitize(rawHtml);
-                botMsg.content = cleanHtml;
+                
+                if (output.startsWith('data:image/')) {
+                    const imageUrl = output.trim();
+                    botMsg.content = `<img src="${imageUrl}" alt="Generated Image" style="width: 400px;" />`;
+                } else {
+                    const rawHtml = marked(output);
+                    const cleanHtml = DOMPurify.sanitize(rawHtml);
+                    botMsg.content = cleanHtml;
+                }
+                console.log("Bot Message: ", botMsg.content); // Add this line to check the bot message
                 setConversation([...newConversation]);
                 scrollToBottom();
                 if (done) break;
@@ -104,7 +119,7 @@ const VanAi = () => {
                 <div className="input-container fixed-bottom bg-light p-3" style={{ width: "100%", boxShadow: "0 -2px 5px rgba(0,0,0,0.1)" }}>
                     <div fused-inputs></div>
                     <div className="input-group">
-                        <input type="file" id="imageInput" name="imageInput" accept="image/*" onChange={(e) => setImageInput(e.target.files[0])} />
+                        <input type="file" ref={fileInputRef} id="imageInput" name="imageInput" accept="image/*" onChange={(e) => setImageInput(e.target.files[0])} />
                         <input type="text" id="question" name="question" className="input-field" value={question} onChange={(e) => setQuestion(e.target.value)} />
                         <button type="submit" id="submit-button" className="submit-button">Submit</button>
                     </div>
