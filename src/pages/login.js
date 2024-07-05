@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/authContext';
-
+import AppNavbar from '../components/navbar';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +27,8 @@ const Login = () => {
   };
 
   return (
+    <>
+    <AppNavbar />
     <div className="container">
       <div className="row justify-content-center">
         <div className="col-md-6">
@@ -62,6 +64,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

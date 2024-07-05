@@ -14,34 +14,43 @@ body, html {
     background-size: cover;
     background-position: center;
     z-index: -1;
+
 }
 
 .vanAi-text {
     text-align: center;
     margin-top: 20px;
-    color: #fff;
+    color: #79e9ff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .conversation-container {
     max-height: 70vh;
-    overflow-y: auto;
+    overflow-y: scroll;
+    overflow-x: auto;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(205, 196, 201);
     border-radius: 10px;
-    margin: 20px;
+    margin: fit-content;
+    border:3px solid;
+   
+  
+    border-left-color:#fc00eb;
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: #fc00eb;
+    border-bottom-color: rgb(0, 0, 0);
 }
 
-.input-container {
+.input-container-fixed-bottom-bg-custom{
     position: fixed;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 80%;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 10px;
+    box-shadow: 0 -2px 5px rgba(133, 68, 155, 0.356);
+    background-color: #d17777;
+    padding: 20px;
+    border-radius: 20px;
 }
 
 .input-group {
@@ -57,27 +66,82 @@ body, html {
     border-radius: 4px;
     margin-right: 10px;
     cursor: pointer;
-    background-color: #f1f1f1;
+    background-color: #070707;
+    color: #fc00eb;
+    border-left-color: #612d45;
+    border-top-color: #612d45;
+    border-right-color:#612d45;
+    border-bottom-color:#612d45;
+    width: 30%;
+    
 }
+
 
 .input-group input[type="text"] {
     flex: 1;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 2px solid #0f0f0f95;
     border-radius: 4px;
     margin-right: 10px;
+    color: #fc00eb;
+    background-color: #e8d7d7;
+    border-left-color: #612d45;
+    border-top-color: #612d45;
+    border-right-color:#612d45;
+    border-bottom-color:#612d45;
 }
 
 .submit-button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #000000;
     border: none;
-    border-radius: 4px;
-    color: #fff;
+    border-radius: 10px;
+    color: #fc00eb;
     cursor: pointer;
-    transition: background-color 0.3s;
+    border-bottom-color: #fc00eb;
 }
 
 .submit-button:hover {
     background-color: #0056b3;
 }
+
+
+.user-message {
+    color: blue;
+    background-color: #e0f7fa;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.bot-message {
+    color: green;
+    background-color: #f1f8e9;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.loading-message {
+    color: orange;
+    background-color: #fff3e0;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.user-image {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+
+@media (max-width: 600px) {
+    .conversation-container {
+      margin-bottom: 50px; /* Adjust as needed */
+    }
+    .input-group {
+      width: 90%; /* Adjust as needed */
+    }
+  }

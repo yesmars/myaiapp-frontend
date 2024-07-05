@@ -14,11 +14,6 @@ const HeroSection = () => {
           <button className='signup-button'onClick={() => navigate('/signup')}>Sign Up</button>
         </div>
       </div>
-
-      <div className="hero-section" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/hero.png)` }}>
-        <h1 className="hero-text">Explore Our Technology</h1>
-      </div>
-
        {/* video back ground  */}
       <div className='hero-section'>
       <video autoPlay muted loop className="hero-video">

@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import AppNavbar from './components/navbar';
 import Login from './pages/login';
 import Signup from './pages/signup';
 import PrivateRoute from './components/PrivateRoute';
@@ -12,7 +11,7 @@ function App() {
   return (
     <div>
       <AuthProvider>
-        <AppNavbar />
+        
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

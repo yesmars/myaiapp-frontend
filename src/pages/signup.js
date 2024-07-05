@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import AppNavbar from '../components/navbar';
 
 const Signup = () => {
     const [firstname, setFirstName] = useState('');
@@ -26,6 +26,8 @@ const Signup = () => {
             setMessage(response.data.message);
             // Redirect the user to /vanai
             navigate('/vanai');
+            // Show an alert
+            window.alert('Account created successfully!');
           
         } catch (error) {
             if (error.response) {
@@ -38,6 +40,8 @@ const Signup = () => {
     };
 
     return (
+        <>
+        <AppNavbar />
         <div className="container">
             <div className="row justify-content-center">
                 <div className="col-md-6">
@@ -115,6 +119,7 @@ const Signup = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 }
 
