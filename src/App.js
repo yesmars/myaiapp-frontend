@@ -18,6 +18,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<><Home/></>} />
+        <Route path="/home" element={<><Home/></>} />
         <Route path="/vanai" element={<><PrivateRoute element={VanAi}/></>} />
         <Route path="/oauth2/callback" element={<Callback />} />
         <Route path="/admin-login" element={<AdminLogin />} />
