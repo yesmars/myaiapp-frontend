@@ -6,4 +6,14 @@
 .navbar {
     position: relative; /* z-index only works on positioned elements */
     z-index: 1000; /* Any high value to ensure navbar is on top */
+    
+}
+.nav-item{
+  background-image: linear-gradient(180deg,#e0e0de,#788660);
+  color: beige;
+  font-weight: bold;
+  gap: 20px;
+}
+.bg-custom {
+  background-color:#788660 !important;
 }

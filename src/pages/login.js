@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/authContext';
 import AppNavbar from '../components/navbar';
+import { Button } from 'react-bootstrap';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import './login.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,17 +28,41 @@ const Login = () => {
       setError('An error occurred. Please try again.');
     }
   };
-
+  const handleGoogleLoginSuccess = async (response) => {
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/google-login', {
+        token: response.credential,
+      });
+      if (res.data.success) {
+        localStorage.setItem('token', res.data.access_token); // Store token in local storage
+        login(); // Update the context
+        navigate('/vanai'); // Redirect to the dashboard
+      } else {
+        setError(res.data.message);
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
+  };
   return (
     <>
     <AppNavbar />
+    <header >
+    
+
+    </header>
     <div className="container">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h2 className="text-center">Login</h2>
+         
+          <br />
+          <br />
+          <div className='control'>
+          <div className="form-control">
           <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="email">Email:</label>
+              
+              <br />
               <input
                 type="email"
                 value={email}
@@ -44,10 +71,14 @@ const Login = () => {
                 name="email"
                 className="form-control"
                 required
+                placeholder='email'
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">Password:</label>
+              <br />
+              <br />
+              
+              <br />
               <input
                 type="password"
                 value={password}
@@ -56,11 +87,45 @@ const Login = () => {
                 name="password"
                 className="form-control"
                 required
+                placeholder='password'
               />
             </div>
             {error && <p>{error}</p>}
-            <button type="submit" className="btn btn-primary">Submit</button>
+            <br />
+            <br />
+            <div className="d-grid gap-2">
+            <Button variant="primary" type="submit" >Log in </Button>
+            
+            </div>
+            <br />
+            <br />
+            <div className="google-login-container" >
+            
+                  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                    <div >
+                    <GoogleLogin 
+                      className="google-login-button"
+                      onSuccess={handleGoogleLoginSuccess}
+                      onError={() => {
+                        setError('Google login failed');
+                      }}
+                      buttonText="Login with Google"
+                    />
+                    </div>
+                  </GoogleOAuthProvider>
+          </div>
+            
           </form>
+          
+          <div>
+            <br />
+            <br />
+            <p className='text-center'>
+              Don't have an account? <a href="/signup">Sign up</a>
+            </p>
+          </div>
+          </div>
+          </div>
         </div>
       </div>
     </div>

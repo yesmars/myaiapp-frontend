@@ -19,7 +19,7 @@ function AppNavbar() {
   return (
     <Navbar bg="light" expand="lg" className="bg-custom">
       <Navbar.Brand href="/home">
-        <img src={`${process.env.PUBLIC_URL}/images/logo.png`} alt="Logo" />
+        <img src={`${process.env.PUBLIC_URL}/images/Olivia.svg`} alt="Logo" />
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
@@ -27,19 +27,19 @@ function AppNavbar() {
           {!isLoggedIn ? (
             <>
               <LinkContainer to="/login">
-                <Nav.Link>Login</Nav.Link>  
+                <Nav.Link className='nav-item'>Login</Nav.Link>  
               </LinkContainer>
               <LinkContainer to="/signup">
-                <Nav.Link>Sign Up</Nav.Link>  
+                <Nav.Link className='nav-item'>Sign Up</Nav.Link>  
               </LinkContainer>
             </>
           ) : (
             <LinkContainer to="/home">
-            <Nav.Link onClick={logout}>Logout</Nav.Link>
+            <Nav.Link className='nav-item' onClick={logout}>Logout</Nav.Link>
             </LinkContainer>
           )}
           <LinkContainer to="/vanai">
-            <Nav.Link>Van-AI</Nav.Link>  
+            <Nav.Link className='nav-item'>Van-AI</Nav.Link>  
           </LinkContainer>
         </Nav>
       </Navbar.Collapse>

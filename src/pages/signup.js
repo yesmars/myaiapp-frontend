@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import AppNavbar from '../components/navbar';
+import Button from 'react-bootstrap/Button';
 
 const Signup = () => {
     const [firstname, setFirstName] = useState('');
@@ -45,8 +46,12 @@ const Signup = () => {
         <div className="container">
             <div className="row justify-content-center">
                 <div className="col-md-6">
+                    <div className='control'>
+                    <div className="form-control">
                     <form onSubmit={handleSubmit}>
-                        <h3 className="text-center"> Sign Up </h3>
+                        <br />
+                        <br />
+                        
                         <div className="form-group">
                             <label htmlFor="first_name">First Name</label>
                             <input 
@@ -58,6 +63,7 @@ const Signup = () => {
                                 className="form-control" 
                                 required 
                             />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -71,6 +77,7 @@ const Signup = () => {
                                 className="form-control" 
                                 required 
                             />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -84,6 +91,7 @@ const Signup = () => {
                                 className="form-control" 
                                 required 
                             />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -97,6 +105,7 @@ const Signup = () => {
                                 className="form-control" 
                                 required 
                             />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -110,11 +119,19 @@ const Signup = () => {
                                 className="form-control" 
                                 required 
                             />
+                            <br />
                         </div>
                         
+                        <div className="d-grid gap-2">
+                            
+                            <Button variant="primary" type="submit" >Sign Up </Button>
+                        </div>
+                        <br />
+                        <br />
                         
-                        <button type="submit" className="btn btn-primary">Submit</button>
                     </form>
+                    </div>
+                    </div>
                     {message && <p>{message}</p>}
                 </div>
             </div>
