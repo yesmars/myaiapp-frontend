@@ -25,16 +25,17 @@ const Signup = () => {
                 password2,
             });
             setMessage(response.data.message);
+            
+            
             // Redirect the user to /vanai
             navigate('/vanai');
             // Show an alert
-            window.alert('Account created successfully!');
-          
+            window.alert(response.data.message);
         } catch (error) {
             if (error.response) {
-                setMessage(error.response.data.error);
+                setMessage(error.response.data.message);
             } else {
-                setMessage(error.message);
+                setMessage('An error occurred. Please try again.');
             }
         }
         
@@ -61,6 +62,7 @@ const Signup = () => {
                                 id="first_name" 
                                 name="first_name" 
                                 className="form-control" 
+                                style={{backgroundColor:'#e0e0de', color:'#383C1A'}}
                                 required 
                             />
                             <br />
@@ -75,6 +77,7 @@ const Signup = () => {
                                 id="last_name" 
                                 name="last_name" 
                                 className="form-control" 
+                                style={{backgroundColor:'#e0e0de', color:'#383C1A'}}
                                 required 
                             />
                             <br />
@@ -89,6 +92,7 @@ const Signup = () => {
                                 id="email" 
                                 name="email" 
                                 className="form-control" 
+                                style={{backgroundColor:'#e0e0de', color:'#383C1A'}}
                                 required 
                             />
                             <br />
@@ -103,6 +107,7 @@ const Signup = () => {
                                 id="password" 
                                 name="password" 
                                 className="form-control" 
+                                style={{backgroundColor:'#e0e0de', color:'#383C1A'}}
                                 required 
                             />
                             <br />
@@ -117,6 +122,7 @@ const Signup = () => {
                                 id="password2" 
                                 name="password2" 
                                 className="form-control" 
+                                style={{backgroundColor:'#e0e0de', color:'#383C1A'}}
                                 required 
                             />
                             <br />
@@ -132,7 +138,7 @@ const Signup = () => {
                     </form>
                     </div>
                     </div>
-                    {message && <p>{message}</p>}
+                    {message && <p className='text-center'>{message}</p>}
                 </div>
             </div>
         </div>

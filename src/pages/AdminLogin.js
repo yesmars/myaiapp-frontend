@@ -28,7 +28,8 @@ const AdminLogin = () => {
 
   return (
     <div>
-      <h2>Admin Login</h2>
+      <h2 className='text-center'>Admin Login</h2>
+      <div className='text-center'>
       <form onSubmit={handleSubmit}>
         <input
           type="password"
@@ -38,10 +39,12 @@ const AdminLogin = () => {
         />
         <button type="submit">Submit</button>
       </form>
+      </div>
       {error && <p>{error}</p>}
       {users.length > 0 && (
-        <div>
-          <h3>User Emails and First Names</h3>
+        <div style={{paddingLeft:'40%'}} >
+          <br />
+          <h3 >User Emails and First Names</h3>
           <ul>
             {users.map((user, index) => (
               <li key={index}>{user.first_name} - {user.email}</li>
