@@ -1,5 +1,5 @@
 .hero-section {
-    height: 100vh; /* Full height of the viewport */
+    height: 100vh; /*Full height of the viewport */
     width: 100%; /* Full width */
     display: flex;
     flex-direction: column;
@@ -11,6 +11,7 @@
     position: relative;
     background-image: linear-gradient(180deg,#e0e0de,#788660);
     text-align: center;
+    
   }
   
   .hero-text {
@@ -54,9 +55,11 @@
   }
   .logo-container{
     z-index: 2;
-    display: flex;
+    display:block;
   justify-content: center;
   align-items: center;
+  padding-bottom: 10px;
+  
   }
   .joke{
   background-color: #e0e0de;
@@ -70,8 +73,8 @@
   border: 1px solid;
   }
   .catpic{
-    width: 200px;
-  height: 200px;
+    width: 250px;
+  height: 250px;
   object-fit: cover;
   background-color:  #e0e0de;
   color: #383C1A;
@@ -98,4 +101,15 @@
   margin-bottom: 20px;
   flex: 1;
   margin: 10px;
+}
+@media (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
+  .logo-container {
+    
+    z-index: 3; /* Ensure the logo is above the joke div */
+  }
+
+  .joke {
+    position: relative;
+    z-index: 2; /* Ensure the joke div is below the logo */
+  }
 }

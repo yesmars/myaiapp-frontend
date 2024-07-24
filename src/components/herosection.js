@@ -32,11 +32,13 @@ const HeroSection = () => {
           <p>
             create a picture of a cute cat:
             <br />
-            <img src={`${process.env.PUBLIC_URL}/images/cutecat.jpg`} alt="Cat" style={{ width: '200px', height: '200px', padding:'5%',backgroundColor:'#e0e0de'}} />
+            <img src={`${process.env.PUBLIC_URL}/images/cutecat.jpg`} alt="Cat" style={{ width: '150px', height: '150px', padding:'5%',backgroundColor:'#e0e0de'}} />
           </p>
         </div>
       </div>
-      </div>
+    </div>
+      
+      
        {/* video back ground  */}
       {/*<div className='hero-section'>
       <video autoPlay muted loop className="hero-video">
