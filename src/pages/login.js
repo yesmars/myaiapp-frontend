@@ -26,7 +26,12 @@ const Login = () => {
         setError(response.data.message);
       }
     } catch (err) {
+      if (err.response) {
+        setError(err.response.data.message);
+      }
+      else {
       setError('An error occurred. Please try again.');
+    }
     }
   };
   const handleGoogleLoginSuccess = async (response) => {
