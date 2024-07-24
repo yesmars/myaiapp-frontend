@@ -12,12 +12,12 @@ const Signup = () => {
     const [password2, setPassword2] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate(); // Initialize useNavigate hook
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://127.0.0.1:5000/signup', {
+            const response = await axios.post(`${API_BASE_URL}/login`, {
                 firstname,
                 lastname, // Include last name
                 email,

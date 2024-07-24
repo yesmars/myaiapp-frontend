@@ -12,11 +12,12 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  console.log(API_BASE_URL);
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', { email, password });
+      const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
       if (response.data.success) {
         localStorage.setItem('token', response.data.access_token); // Store token in local storage
         login(); // Update the context
@@ -30,7 +31,7 @@ const Login = () => {
   };
   const handleGoogleLoginSuccess = async (response) => {
     try {
-      const res = await axios.post('http://127.0.0.1:5000/google-login', {
+      const res = await axios.post(`${API_BASE_URL}/google-login`, {
         token: response.credential,
       });
       if (res.data.success) {

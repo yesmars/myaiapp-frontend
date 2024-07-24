@@ -6,7 +6,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [users, setUsers] = useState([]);
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
@@ -14,7 +14,7 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/admin-login', { password });
+      const response = await axios.post(`${API_BASE_URL}/admin-login`, { password });
       if (response.data.success) {
         setUsers(response.data.users);
         setError('');

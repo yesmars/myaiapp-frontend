@@ -15,7 +15,7 @@ const VanAi = () => {
     const [showSuggestions, setShowSuggestions] = useState(true);
     const [nextSuggestions, setNextSuggestions] = useState([]);
     const conversationDivRef = useRef(null);
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const suggestions = [
         
         "Tell me a joke.",
@@ -75,7 +75,7 @@ const VanAi = () => {
             }
             console.log("Token: ", token); // Add this line to check the token
 
-            const response = await fetch('http://127.0.0.1:5000/vanai', {
+            const response = await fetch(`${API_BASE_URL}/vanai`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -139,7 +139,7 @@ const VanAi = () => {
             }
             // Fetch the next suggestions
             const textResponse= stripHtmlTags(botMsg.content);
-            const nextSuggestionsResponse = await fetch('http://127.0.0.1:5000/suggestions',{
+            const nextSuggestionsResponse = await fetch(`${API_BASE_URL}/suggestions`,{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
