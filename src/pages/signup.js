@@ -17,7 +17,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_BASE_URL}/login`, {
+            const response = await axios.post(`${API_BASE_URL}/signup`, {
                 firstname,
                 lastname, // Include last name
                 email,
