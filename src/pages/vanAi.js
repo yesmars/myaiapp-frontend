@@ -7,6 +7,7 @@ import AppNavbar from '../components/navbar';
 import SuggestionCard from '../components/SuggestionCards';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Base64AudioPlayer from '../components/b64audio';
+import { useNavigate } from 'react-router-dom';
 
 const VanAi = () => {
     const [question, setQuestion] = useState('');
@@ -24,7 +25,7 @@ const VanAi = () => {
         "generate an audio of the words I love you in Vietnamese please"
     ];
 
- 
+    const navigate = useNavigate();
     const scrollToBottom = () => {
         const conversationDiv = conversationDivRef.current;
         if (conversationDiv) {
@@ -71,7 +72,10 @@ const VanAi = () => {
 
             const token = localStorage.getItem('token');
             if (!token) {
+                localStorage.removeItem('token');
+                navigate('/login');
                 setError('User not authenticated');
+                
                 return;
             }
             console.log("Token: ", token); // Add this line to check the token
