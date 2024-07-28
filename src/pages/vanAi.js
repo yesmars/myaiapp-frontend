@@ -6,6 +6,7 @@ import DOMPurify from 'dompurify';
 import AppNavbar from '../components/navbar';
 import SuggestionCard from '../components/SuggestionCards';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import Base64AudioPlayer from '../components/b64audio';
 
 const VanAi = () => {
     const [question, setQuestion] = useState('');
@@ -20,7 +21,7 @@ const VanAi = () => {
         
         "Tell me a joke.",
         "Create a picture of a cute cat.",
-        "Describe the Mona Lisa painting."
+        "How to pronounce I love you in Vietnamese?"
     ];
 
  
@@ -99,6 +100,7 @@ const VanAi = () => {
             while (true) {
                 const { done, value } = await reader.read();
                 output += new TextDecoder().decode(value || new Uint8Array(), { stream: !done });
+                console.log("Output: ", output); // Add this line to check the output
 
                 if (output.includes('data:image/')) {
                     const [textPart, imagePart] = output.split('data:image/');
@@ -118,6 +120,7 @@ const VanAi = () => {
                     }
                 else if (output.startsWith('data:image/')) {
                     const imageUrl = output.trim();
+                    console.log("Image URL: ", imageUrl); // Add this line to check the image URL
                     botMsg.content = `
                         <div>
                             <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
@@ -125,12 +128,26 @@ const VanAi = () => {
                             <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
                             </div>
                         </div>`;
-                    botMsg.isImage = true;}
-                } else {
+                    botMsg.isImage = true;
+                    console.log("Bot Message image: ", botMsg.content); // Add this line to check the bot message
+                    }
+                } 
+                else if (output.startsWith('data:audio/')) {
+                    console.log("Output inside audio: ", output);
+                    const splitOutput = output.trim().split('data:audio/mp3;base64,');
+                    console.log("Split Output: ", splitOutput);
+                    const audioUrl = splitOutput[1];
+                    console.log("Audio URL2: ", audioUrl);
+                    botMsg.content = audioUrl;
+                    botMsg.isAudio = true;
+                    console.log("Bot Message audio: ", botMsg.content);
+                }
+                else {
                     const rawHtml = marked(output);
                     const cleanHtml = DOMPurify.sanitize(rawHtml);
                     botMsg.content = cleanHtml;
                     botMsg.isImage = false;
+                    botMsg.isAudio = false;
                 }
                 console.log("Bot Message: ", botMsg.content); // Add this line to check the bot message
                 setConversation([...newConversation]);
@@ -188,13 +205,16 @@ const VanAi = () => {
                                 <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'black', paddingTop:"10%", paddingBottom:'10%' }}>
                                 <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
                                 </div>
+                            ) : msg.type === 'bot' && msg.isAudio ? (
+                                <Base64AudioPlayer base64String={msg.content} />
                             ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
                                 <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
                             ) : (
                                 parse(DOMPurify.sanitize(msg.content))
-                            )}  
+                    )}
+                        
                         </div>
-                    ))}
+                        ))}
                     {showSuggestions && (
                     <Container>
                         <Row>

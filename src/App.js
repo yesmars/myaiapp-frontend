@@ -9,6 +9,7 @@ import VanAi from './pages/vanAi';
 import { AuthProvider } from './components/authContext';
 import Callback from './components/GoogleCallBack';
 import AdminLogin from './pages/AdminLogin';
+import Testaudio from './pages/test';
 function App() {
   return (
     <div>
@@ -22,6 +23,7 @@ function App() {
         <Route path="/vanai" element={<><PrivateRoute element={VanAi}/></>} />
         <Route path="/oauth2/callback" element={<Callback />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/test" element={<Testaudio />} />
         {/* The HeroSection is now part of the Home route */}
         {/* Add other routes here */}
       </Routes>
