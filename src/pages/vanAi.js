@@ -21,7 +21,7 @@ const VanAi = () => {
         
         "Tell me a joke.",
         "Create a picture of a cute cat.",
-        "How to pronounce I love you in Vietnamese?"
+        "generate an audio of the words I love you in Vietnamese please"
     ];
 
  
