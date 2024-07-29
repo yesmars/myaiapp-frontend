@@ -14,7 +14,7 @@ const Base64AudioPlayer = ({ base64String }) => {
 
     return (
         <audio controls style={audioStyle}>
-            <source src={`data:audio/mpeg;base64,${base64String}`} type="audio/mpeg" />
+            <source src={`data:audio/mp3;base64,${base64String}`} type="audio/mp3" />
             Your browser does not support the audio element.
         </audio>
     );
