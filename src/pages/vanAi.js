@@ -102,7 +102,7 @@ const VanAi = () => {
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
-            let base64Audio = '';
+           
             const botMsg = { type: 'bot', content: '' };
             newConversation.pop();
             newConversation.push(botMsg);
@@ -146,7 +146,7 @@ const VanAi = () => {
                 } 
                 else if (output.includes('data:audio/')) {
                    
-                    base64Audio += output.split('data:audio/mp3;base64,')[1];
+                    const base64Audio = output.split('data:audio/mp3;base64,')[1];
                     botMsg.content = base64Audio;
                     console.log("Base64 Audio: ", base64Audio); // Add this line to check the base64 audio
                     botMsg.isAudio = true;
