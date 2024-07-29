@@ -102,6 +102,7 @@ const VanAi = () => {
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
+            let base64Audio = '';
             const botMsg = { type: 'bot', content: '' };
             newConversation.pop();
             newConversation.push(botMsg);
@@ -143,15 +144,12 @@ const VanAi = () => {
                     console.log("Bot Message image: ", botMsg.content); // Add this line to check the bot message
                     }
                 } 
-                else if (output.startsWith('data:audio/')) {
-                    console.log("Output inside audio: ", output);
-                    const splitOutput = output.trim().split('data:audio/mp3;base64,');
-                    console.log("Split Output: ", splitOutput);
-                    const audioUrl = splitOutput[1];
-                    console.log("Audio URL2: ", audioUrl);
-                    botMsg.content = audioUrl;
+                else if (output.includes('data:audio/')) {
+                   
+                    base64Audio += output.split('data:audio/mp3;base64,')[1];
+                    botMsg.content = base64Audio;
                     botMsg.isAudio = true;
-                    console.log("Bot Message audio: ", botMsg.content);
+                   
                 }
                 else {
                     const rawHtml = marked(output);
