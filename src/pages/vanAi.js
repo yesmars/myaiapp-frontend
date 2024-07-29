@@ -73,6 +73,7 @@ const VanAi = () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 localStorage.removeItem('token');
+                console.log("check Token: ", token); // Add this line to check the token
                 navigate('/login');
                 setError('User not authenticated');
                 
@@ -87,6 +88,12 @@ const VanAi = () => {
                 },
                 body: formData
             });
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                navigate('/login');
+                setError('User not authenticated');
+                return;
+            }
 
             if (!response.ok) {
                 setError('Failed to send message');
