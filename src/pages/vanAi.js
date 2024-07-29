@@ -6,7 +6,7 @@ import DOMPurify from 'dompurify';
 import AppNavbar from '../components/navbar';
 import SuggestionCard from '../components/SuggestionCards';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import Base64AudioPlayer from '../components/b64audio';
+
 import { useNavigate } from 'react-router-dom';
 
 const VanAi = () => {
@@ -130,28 +130,54 @@ const VanAi = () => {
                             </div>`;
                         botMsg.isImage = true; 
                     }
-                else if (output.startsWith('data:image/')) {
-                    const imageUrl = output.trim();
-                    console.log("Image URL: ", imageUrl); // Add this line to check the image URL
-                    botMsg.content = `
-                        <div>
-                            <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
-                            <div style=" text-align: right;">
-                            <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
-                            </div>
-                        </div>`;
-                    botMsg.isImage = true;
-                    console.log("Bot Message image: ", botMsg.content); // Add this line to check the bot message
-                    }
-                } 
-                else if (output.includes('data:audio/')) {
-                   
-                    const base64Audio = output.split('data:audio/mp3;base64,')[1];
-                    botMsg.content = base64Audio;
-                    console.log("Base64 Audio: ", base64Audio); // Add this line to check the base64 audio
-                    botMsg.isAudio = true;
-                   
+                    else if (output.startsWith('data:image/')) {
+                        const imageUrl = output.trim();
+                        console.log("Image URL: ", imageUrl); // Add this line to check the image URL
+                        botMsg.content = `
+                            <div>
+                                <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
+                                <div style=" text-align: right;">
+                                <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
+                                </div>
+                            </div>`;
+                        botMsg.isImage = true;
+                        console.log("Bot Message image: ", botMsg.content); // Add this line to check the bot message
+                        }
                 }
+                else if (output.includes('data:audio/')) {
+                    
+                    const [textPart, audioPart] = output.split('data:audio/');
+                    if (textPart.trim()) { 
+                        const rawHtml = marked(textPart.trim());
+                        const cleanHtml = DOMPurify.sanitize(rawHtml);
+                        botMsg.content = cleanHtml;
+                        const audioUrl = `data:audio/${audioPart.trim()}`;
+                        botMsg.content += `
+                        <div>
+                        <audio controls>
+                            <source src="${audioUrl}" type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                        </div>`;
+                        botMsg.isAudio = true;}
+                    
+                    
+                   
+                
+                    else if (output.startsWith('data:audio/')) {
+                        const audioUrl = output.trim();
+                        console.log("Audio URL: ", audioUrl); // Add this line to check the audio URL
+                        botMsg.content = `
+                            <div>
+                            <audio controls>
+                                <source src="${audioUrl}" type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                            </audio>
+                            </div>`;
+                        botMsg.isAudio = true;
+                        console.log("Bot Message audio: ", botMsg.content); // Add this line to check the bot message
+
+                }}
                 else {
                     const rawHtml = marked(output);
                     const cleanHtml = DOMPurify.sanitize(rawHtml);
@@ -215,8 +241,8 @@ const VanAi = () => {
                                 <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'black', paddingTop:"10%", paddingBottom:'10%' }}>
                                 <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
                                 </div>
-                            ) : msg.type === 'bot' && msg.isAudio ? (
-                                <Base64AudioPlayer base64String={msg.content} />
+                            /*) : msg.type === 'bot' && msg.isAudio ? (
+                                <Base64AudioPlayer base64String={msg.content} />*/
                             ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
                                 <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
                             ) : (
