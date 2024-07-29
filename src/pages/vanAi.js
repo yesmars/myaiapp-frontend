@@ -148,6 +148,7 @@ const VanAi = () => {
                    
                     base64Audio += output.split('data:audio/mp3;base64,')[1];
                     botMsg.content = base64Audio;
+                    console.log("Base64 Audio: ", base64Audio); // Add this line to check the base64 audio
                     botMsg.isAudio = true;
                    
                 }
