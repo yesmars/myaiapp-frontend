@@ -113,8 +113,41 @@ const VanAi = () => {
                 const { done, value } = await reader.read();
                 output += new TextDecoder().decode(value || new Uint8Array(), { stream: !done });
                 console.log("Output: ", output); // Add this line to check the output
-
-                if (output.includes('data:image/')) {
+                if (output.includes('data:image/') && output.includes('data:audio/')) {
+                    const [textPart, imageAndAudioPart] = output.split('data:image/');
+                    const [imagePart, audioPart] = imageAndAudioPart.split('data:audio/');
+                    if (textPart.trim()) {
+                        const rawHtml = marked(textPart.trim());
+                        const cleanHtml = DOMPurify.sanitize(rawHtml);
+                        botMsg.content = cleanHtml;
+                        console.log("Bot Message text: ", botMsg.content); // Add this line to check the bot message
+                    }
+                    if (imagePart) {
+                        const imageUrl = `data:image/${imagePart.trim()}`;
+                        console.log("Image URL: ", imageUrl); // Add this line to check the image URL
+                        botMsg.content += `
+                            <div>
+                                <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
+                                <div style="text-align: right;">
+                                    <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
+                                </div>
+                            </div>`;
+                        botMsg.isImage = true;
+                    }
+                    if (audioPart) {
+                        const audioUrl = `data:audio/${audioPart.trim()}`;
+                        console.log("Audio URL: ", audioUrl); // Add this line to check the audio URL
+                        botMsg.content += `
+                            <div>
+                                <audio controls>
+                                    <source src="${audioUrl}" type="audio/mpeg" />
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>`;
+                        botMsg.isAudio = true;
+                    }
+                } 
+                else if (output.includes('data:image/')) {
                     const [textPart, imagePart] = output.split('data:image/');
                     if (textPart.trim()){
                         const rawHtml = marked(textPart.trim());
