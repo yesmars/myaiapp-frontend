@@ -217,6 +217,9 @@ const VanAi = () => {
                     botMsg.content = cleanHtml;
                     botMsg.isImage = false;
                     botMsg.isAudio = false;
+                    if (botMsg.content===''){
+                        botMsg.content = "I'm sorry, an error occurred. Please try to log out and login again.";
+                    }
                 }
                 console.log("Bot Message: ", botMsg.content); // Add this line to check the bot message
                 setConversation([...newConversation]);
