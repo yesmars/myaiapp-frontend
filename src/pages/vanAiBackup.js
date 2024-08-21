@@ -7,16 +7,13 @@ import AppNavbar from '../components/navbar';
 import SuggestionCard from '../components/SuggestionCards';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import highlightjs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css'; // Choose a style from highlight.js
 
+import axios from 'axios';
 
 const VanAi = () => {
     const [question, setQuestion] = useState('');
     const [error, setError] = useState('');
     const [imageInput, setImageInput] = useState(null);
-    const [imagePreview, setImagePreview] = useState('');
     const [conversation, setConversation] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(true);
     const [nextSuggestions, setNextSuggestions] = useState([]);
@@ -25,7 +22,6 @@ const VanAi = () => {
     const [sidebarLoading, setSidebarLoading] = useState(true);
     const [sidebarError, setSidebarError] = useState('');
     const [currentThreadId, setCurrentThreadId] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const conversationDivRef = useRef(null);
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
@@ -46,48 +42,6 @@ const VanAi = () => {
         scrollToBottom();
     }, [conversation]);
 
-    // Apply syntax highlighting after conversation updates
-    useEffect(() => {
-        highlightjs.highlightAll();
-    }, [conversation]);
-
-    useEffect(() => {
-        const handleCopyClick = (event) => {
-            if (event.target.classList.contains('copy-code-button')) {
-                const code = event.target.previousSibling.textContent;
-                navigator.clipboard.writeText(code).then(() => {
-                    const originalText = event.target.textContent;
-                    event.target.textContent = 'Copied!';
-                    setTimeout(() => {
-                        event.target.textContent = originalText;
-                    }, 2000);
-                });
-            }
-        };
-    
-        const createCopyButton = (element) => {
-            const copyButton = document.createElement('button');
-            copyButton.textContent = 'Copy';
-            copyButton.className = 'copy-code-button';
-            element.parentNode.insertBefore(copyButton, element.nextSibling);
-        };
-    
-        document.addEventListener('click', handleCopyClick);
-    
-        const codeElements = document.querySelectorAll('pre code');
-        codeElements.forEach(createCopyButton);
-    
-        return () => {
-            document.removeEventListener('click', handleCopyClick);
-        };
-    }, []);
-    
-      marked.setOptions({
-        highlight: function (code, lang) {
-            const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
-            return highlightjs.highlight(code, { language }).value;
-        },
-    });
     // Function to toggle the sidebar
     const fetchConversations = useCallback(async () => {
         const token = localStorage.getItem('token');
@@ -111,7 +65,7 @@ const VanAi = () => {
                 setConversations([]);
             } else {
                 setConversations(response.data);
-               
+                console.log("Conversations: ", response.data);
             }
         } catch (err) {
             if (err.response) {
@@ -140,35 +94,8 @@ const VanAi = () => {
         fetchConversations();
     }, [fetchConversations]);
 
-    const handleTextAreaInput = (e) => {
-        setQuestion(e.target.value);
-        // Adjust textarea height automatically
-        e.target.style.height = "auto";
-        e.target.style.height = e.target.scrollHeight + "px";
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageInput(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result); // Set the preview here
-                setQuestion(question);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleRemoveImage = () => {
-        setImageInput(null);
-        setImagePreview('');
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
     
-
+   
     // Function to handle form submission
     const handleSubmit = async (e, question, imageInput) => {
        
@@ -197,7 +124,6 @@ const VanAi = () => {
             setShowSuggestions(false);
             setNextSuggestions(false);
             scrollToBottom();
-            setImagePreview('');
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -214,13 +140,13 @@ const VanAi = () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 localStorage.removeItem('token');
-         
+                console.log("check Token: ", token); // Add this line to check the token
                 navigate('/login');
                 setError('User not authenticated');
                 return;
             }
-          
-            setIsLoading(true);
+            console.log("Token: ", token); // Add this line to check the token
+
             const response = await fetch(`${API_BASE_URL}/vanai`, {
                 method: 'POST',
                 headers: {
@@ -240,8 +166,7 @@ const VanAi = () => {
                 setError('Failed to send message');
                 return;
             }
-        
-           
+
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
@@ -256,7 +181,7 @@ const VanAi = () => {
             while (true) {
                 const { done, value } = await reader.read();
                 output += new TextDecoder().decode(value || new Uint8Array(), { stream: !done });
-                // Replace the `<div class="code-block-container">...</div>` blocks with a properly formatted copyable code block
+                console.log("Output: ", output); // Add this line to check the output
                 if (output.includes('data:image/') && output.includes('data:audio/')) {
                     const [textPart, imageAndAudioPart] = output.split('data:image/');
                     const [imagePart, audioPart] = imageAndAudioPart.split('data:audio/');
@@ -298,8 +223,8 @@ const VanAi = () => {
                         botMsg.content = cleanHtml;
                         const imageUrl = `data:image/${imagePart.trim()}`;
                         botMsg.content += `
-                            <div class="control-bot-image">
-                                <img src="${imageUrl}" class="bot-image" alt="Generated Image" style="border-radius:20px; width:50%; height:auto;" /> <br />
+                            <div>
+                                <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
                                 <div style="text-align: right;">
                                     <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
                                 </div>
@@ -309,8 +234,8 @@ const VanAi = () => {
                         const imageUrl = output.trim();
                         console.log("Image URL: ", imageUrl); // Add this line to check the image URL
                         botMsg.content = `
-                            <div class="control-bot-image">
-                                <img src="${imageUrl}" class="bot-image" alt="Generated Image" style="width:50%; height:auto;" /> <br />
+                            <div>
+                                <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
                                 <div style="text-align: right;">
                                     <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
                                 </div>
@@ -327,7 +252,7 @@ const VanAi = () => {
                         botMsg.content = cleanHtml;
                         const audioUrl = `data:audio/${audioPart.trim()}`;
                         botMsg.content += `
-                        <div class="control-audio">
+                        <div>
                         <audio controls>
                             <source src="${audioUrl}" type="audio/mpeg" />
                             Your browser does not support the audio element.
@@ -348,65 +273,22 @@ const VanAi = () => {
                         console.log("Bot Message audio: ", botMsg.content); // Add this line to check the bot message
 
                     }
-                /*} else if (output.includes('```')) {
-                    const codeBlockRegex = /```([\s\S]+?)```/g;
-                    const codeBlockMatches = output.match(codeBlockRegex);
-                    console.log("Code Block Matches: ", codeBlockMatches); // Add this line to check the code block matches 
-                    if (codeBlockMatches) {
-                        //const codeBlocks = codeBlockMatches.map((match) => match.replace(/```/g, ''));
-                        for (let i = 0; i < codeBlockMatches.length; i++) {
-                        let string=codeBlockMatches[i];
-                        const [textPart, ...moreText] = output.split(codeBlockRegex);
-                        console.log('text part:', textPart);
-                        console.log('more text:', moreText);
-                        
-                            const rawHtml = marked(textPart.trim());
-                            const cleanHtml = DOMPurify.sanitize(rawHtml);
-                            botMsg.content = cleanHtml;
-                            botMsg.content =
-                                    `<div class="code-block-container">
-                                        <button class="copy-code-button" data-code="${encodeURIComponent(string)}">Copy</button>
-                                        <div class="code-content">
-                                        ${marked(string, {
-                                            highlight: function (code, lang) {
-                                                const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
-                                                return `<code class="hljs ${language}">${highlightjs.highlight(code, { language }).value}</code>`;
-                                            },
-                                        })}
-                                        </div>
-                                    </div>`;
-                            }
-                            
-                        
-                    
-                    }*/
-
-                
                 } else {
                     
                     const rawHtml = marked(output);
-                    console.log("Raw HTML: ", rawHtml); // Add this line to check the raw HTML
                     const cleanHtml = DOMPurify.sanitize(rawHtml);
-                  
                     botMsg.content = cleanHtml;
-                  
                     botMsg.isImage = false;
                     botMsg.isAudio = false;
                     if (botMsg.content === '') {
                         botMsg.content = "I'm sorry, an error occurred. Please try to log out and login again.";
                     }
                 }
-               
+                console.log("Bot Message: ", botMsg.content); // Add this line to check the bot message
                 setConversation([...newConversation]);
 
                 if (done) break;
             }
-
-            // Apply syntax highlighting after setting the conversation
-            setTimeout(() => {
-                highlightjs.highlightAll();
-            }, 0);
-            setIsLoading(false);
             // Fetch the next suggestions
             const textResponse = stripHtmlTags(botMsg.content);
             const nextSuggestionsResponse = await fetch(`${API_BASE_URL}/suggestions`, {
@@ -425,13 +307,13 @@ const VanAi = () => {
             const nextSuggestionsData = await nextSuggestionsResponse.json();
 
             setNextSuggestions(nextSuggestionsData);
+            console.log("Next Suggestions: ", nextSuggestionsData); // Add this line to check the next suggestions
         } catch (error) {
             console.error("Error:", error);
             setError('An error occurred. Please try again.');
 
         }
         scrollToBottom();
-        
        
     };
 
@@ -454,8 +336,7 @@ const VanAi = () => {
         // Parse the conversation log and set it to the conversation state
         const parsedConversation = conversation_log.slice().reverse().map((msg) => {
             const [type, ...contentArray] = msg.split(': ');
-            let preContent=contentArray.join(': ');
-            const content = marked(preContent);
+            const content = marked(contentArray.join(': '));
             return { type: type.trim().toLowerCase(), content };
         });
         setConversation(parsedConversation);
@@ -470,6 +351,13 @@ const VanAi = () => {
     return (
         <div className={`vanAi-container ${showSidebar ? 'sidebar-open' : ''}`}>
             <AppNavbar toggleSidebar={toggleSidebar} showSidebar={showSidebar}/>
+            
+            {/*!showSidebar && (
+            <button className="toggle-sidebar" onClick={toggleSidebar}>
+                {showSidebar ? '<<' : '>>'}
+            </button>
+            )*/}
+            
             <div className={`conversation-sidebar ${showSidebar ? 'show' : ''}`}>
                 <br />
                 
@@ -496,7 +384,7 @@ const VanAi = () => {
                                 <li key={thread_id} className="conversation-item" onClick={() => handleConversationClick(thread_id, conversation_log)}>
                                     <br />
                                     <p style={{ fontWeight: 'bold', textAlign: 'left' }}>{parse(marked(summary))}</p>
-                                    
+                                    {console.log("Sumary: ", summary)}
                                     
                                 </li>
                             );
@@ -514,21 +402,19 @@ const VanAi = () => {
                         <div className='message-container'>
                         <div key={index} className={`${msg.type}-message`}>
                             {msg.type === 'image' ? (
-                                <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'beige' }}>
+                                <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'black', paddingTop:"10%", paddingBottom:'10%' }}>
                                     <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
                                 </div>
                             ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
                                 <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
-                            ) : msg.type === 'assistant' && typeof msg.content === 'string' ? (
-                                <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
-                            ) : (parse(msg.content)
-
+                            ) : (
+                                parse(DOMPurify.sanitize(msg.content))
                             )}
                         </div>
                         </div>
                     ))}
                     {showSuggestions && (
-                        <Container className='card-container'>
+                        <Container>
                             <Row>
                                 {suggestions.map((suggestion, index) => (
                                     <Col key={index} md={4}>
@@ -551,58 +437,14 @@ const VanAi = () => {
                 </div>
             </div>
             
-            <Form onSubmit={(e) => handleSubmit(e, question, imageInput)} encType="multipart/form-data">
+            <Form onSubmit={(e) => handleSubmit(e, question, imageInput)}  encType="multipart/form-data">
+            
                 <div className='input-container'>
-                        <div className='control-image'>
-                        {imagePreview && (
-                            <div className="image-preview">
-                                <div className='image-itself'>
-                                <img src={imagePreview} alt="Selected" style={{ width: '100px', height: 'auto', margin: '10px 0' }} />
-                                </div>
-                                <button type="button" className="remove-image" onClick={handleRemoveImage}>X</button>
-                            </div>
-                        )}
-                        </div>
-                <div className='file-text-button'>
-                        
-                    <div className="input-group">
-                        <div className='button-wrapper'>
-                            <div className='plus-button'>
-                            <label htmlFor="imageInput" className="file-input-label">+</label>
-                            </div>
-                        </div>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                id="imageInput"
-                                name="imageInput"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                style={{ display: 'none' }}
-                            />
-                            <div className='text-area'>
-                            <textarea
-                                id="question"
-                                name="question"
-                                className="input-field"
-                                value={question}
-                                onChange={handleTextAreaInput}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleSubmit(e, question, imageInput);
-                                    }
-                                }}
-                                placeholder="Ask something..."
-                                rows={1}
-                                disabled={isLoading}
-                            />
-                        </div>
-                            <div className='button-control'>
-                            <Button type="submit" id="submit-button" className="submit-button">ask</Button>
-                            </div>
-                        </div>
-                    </div>    
+                    <div className="input-group"> 
+                        <input type="file" ref={fileInputRef} id="imageInput" name="imageInput" accept="image/*" onChange={(e) => setImageInput(e.target.files[0])} />
+                        <input type="text" id="question" name="question" className="input-field" value={question} onChange={(e) => setQuestion(e.target.value)} />
+                        <Button type="submit" id="submit-button" className="submit-button">Submit</Button>
+                    </div>
                 </div>
             </Form>
             {error && <div className="error-message">{error}</div>}

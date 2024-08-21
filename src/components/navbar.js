@@ -2,10 +2,13 @@ import React, { useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+
+
 import './navbar.css';
 import { useAuth } from './authContext';
+import { Dropdown } from 'react-bootstrap';
 
-function AppNavbar() {
+function AppNavbar({ toggleSidebar, showSidebar }) {
   const { isLoggedIn, logout,login } = useAuth();
 
   useEffect(() => {
@@ -17,33 +20,39 @@ function AppNavbar() {
   }, [login]);
 
   return (
-    <Navbar bg="light" expand="lg" className="bg-custom">
-      <Navbar.Brand href="/home">
-        <img src={`${process.env.PUBLIC_URL}/images/Olivia.svg`} alt="Logo" />
+    <Navbar bg="light" expand={false} className="bg-custom" fixed='top'>
+      <Navbar.Brand className="mx-auto">
+        <img className='logo' src={`${process.env.PUBLIC_URL}/images/Olivia.svg`} alt="Logo" />
       </Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
-          {!isLoggedIn ? (
-            <>
-              <LinkContainer to="/login">
-                <Nav.Link className='nav-item'>Login</Nav.Link>  
-              </LinkContainer>
-              <LinkContainer to="/signup">
-                <Nav.Link className='nav-item'>Sign Up</Nav.Link>  
-              </LinkContainer>
-            </>
-          ) : (
-            <LinkContainer to="/home">
-            <Nav.Link className='nav-item' onClick={logout}>Logout</Nav.Link>
-            </LinkContainer>
-          )}
-          <LinkContainer to="/vanai">
-            <Nav.Link className='nav-item'>Van-AI</Nav.Link>  
+      <Nav.Item className="nav-item toggle-sidebar" onClick={toggleSidebar}>
+        {showSidebar ? '<<<' : '>>>'}
+      </Nav.Item>
+      <Dropdown>
+    <Dropdown.Toggle variant="success" id="dropdown-basic">
+      Menu
+    </Dropdown.Toggle>
+
+    <Dropdown.Menu>
+      {!isLoggedIn ? (
+        <>
+          <LinkContainer to="/login">
+            <Dropdown.Item>Login</Dropdown.Item>
           </LinkContainer>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
+          <LinkContainer to="/signup">
+            <Dropdown.Item>Sign Up</Dropdown.Item>
+          </LinkContainer>
+        </>
+      ) : (
+        <LinkContainer to="/home">
+          <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+        </LinkContainer>
+      )}
+      <LinkContainer to="/vanai">
+        <Dropdown.Item>Van-AI</Dropdown.Item>
+      </LinkContainer>
+    </Dropdown.Menu>
+  </Dropdown>
+</Navbar>
   );
 }
 

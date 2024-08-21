@@ -1,19 +1,48 @@
-/* src/components/Navbar.css */
-.navbar-brand img {
-    height: 40px; /* Adjust the height as needed */
-    width: auto;  /* Maintain the aspect ratio */
-  }
 .navbar {
-    position: relative; /* z-index only works on positioned elements */
-    z-index: 1000; /* Any high value to ensure navbar is on top */
-    
-}
-.nav-item{
-  background-image: linear-gradient(180deg,#e0e0de,#788660);
-  color: beige;
-  font-weight: bold;
-  gap: 20px;
+  display: flex;
+  height: auto;
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  border-radius: 0 0 5px 5px;
 }
 .bg-custom {
-  background-color:#788660 !important;
+  background-color:#7f9446 !important;
 }
+.navbar-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0;
+}
+
+.navbar-brand img {
+  height: 100px;
+  width: auto;
+  display: block;
+}
+
+.nav-item.toggle-sidebar {
+  background-color: #249446f4;
+  color: #e0e0de;
+  padding: 7px;
+  margin-right: auto;
+  border-radius: 50px;
+}
+.nav-item.toggle-sidebar:hover {
+  background-color:#879dd3;
+}
+.dropdown {
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .navbar-brand img {
+    height: 80px;
+  }
+}
+
+/* Keep other styles as they were */
