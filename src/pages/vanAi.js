@@ -36,8 +36,8 @@ const VanAi = () => {
     ];
     const fileInputRef = useRef(null);
     const bottomRef = useRef(null);
-    // Function to scroll to the bottom of the conversation
-    const scrollToBottom = () => {
+      // Function to scroll to the bottom of the conversation
+      const scrollToBottom = () => {
         bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     };
    
@@ -45,7 +45,7 @@ const VanAi = () => {
     useEffect(() => {
         scrollToBottom();
     }, [conversation]);
-
+    
     // Apply syntax highlighting after conversation updates
     useEffect(() => {
         highlightjs.highlightAll();
@@ -53,34 +53,63 @@ const VanAi = () => {
 
     useEffect(() => {
         const handleCopyClick = (event) => {
-            if (event.target.classList.contains('copy-code-button')) {
-                const code = event.target.previousSibling.textContent;
-                navigator.clipboard.writeText(code).then(() => {
-                    const originalText = event.target.textContent;
-                    event.target.textContent = 'Copied!';
-                    setTimeout(() => {
+            if (event.target && event.target.className === 'copy-code-button') {
+                const code = event.target.nextElementSibling.textContent;
+                navigator.clipboard.writeText(code);
+    
+                const originalText = event.target.textContent;
+                event.target.textContent = 'Copied!';
+                setTimeout(() => {
+                    if (event.target) {
                         event.target.textContent = originalText;
-                    }, 2000);
-                });
+                    }
+                }, 2000);
             }
         };
     
-        const createCopyButton = (element) => {
-            const copyButton = document.createElement('button');
-            copyButton.textContent = 'Copy';
-            copyButton.className = 'copy-code-button';
-            element.parentNode.insertBefore(copyButton, element.nextSibling);
+        const addCopyButtons = () => {
+            // Remove existing copy buttons to prevent duplication
+            const existingButtons = document.querySelectorAll('.copy-code-button');
+            existingButtons.forEach(button => button.remove());
+    
+            // Add new copy buttons
+            const codeElements = document.querySelectorAll('pre code');
+            codeElements.forEach((element) => {
+                // Create a wrapping container (if not already wrapped)
+                let wrapper = element.parentElement;
+                if (!wrapper.classList.contains('code-block-container')) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'code-block-container';
+                    element.parentNode.insertBefore(wrapper, element);
+                    wrapper.appendChild(element);
+                }
+    
+                // Create and insert the copy button
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy';
+                copyButton.className = 'copy-code-button';
+    
+                // Insert the copy button at the top right
+                wrapper.insertBefore(copyButton, wrapper.firstChild);
+            });
         };
     
+        // Attach click event listener
         document.addEventListener('click', handleCopyClick);
     
-        const codeElements = document.querySelectorAll('pre code');
-        codeElements.forEach(createCopyButton);
+        // Add copy buttons
+        addCopyButtons();
     
+        // Cleanup event listener on component unmount
         return () => {
             document.removeEventListener('click', handleCopyClick);
         };
-    }, []);
+    }, [conversation]); // Only rerun this effect when the conversation changes
+    
+    
+    
+    
+    
     
       marked.setOptions({
         highlight: function (code, lang) {
@@ -147,6 +176,8 @@ const VanAi = () => {
         e.target.style.height = e.target.scrollHeight + "px";
     };
 
+    
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -167,11 +198,10 @@ const VanAi = () => {
             fileInputRef.current.value = '';
         }
     };
-    
 
     // Function to handle form submission
     const handleSubmit = async (e, question, imageInput) => {
-       
+        
         if (e) e.preventDefault();
         try {
             if (!question && !imageInput) {
@@ -521,7 +551,7 @@ const VanAi = () => {
                                 <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
                             ) : msg.type === 'assistant' && typeof msg.content === 'string' ? (
                                 <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
-                            ) : (parse(msg.content)
+                            ) : (parse (marked(DOMPurify.sanitize(msg.content)))
 
                             )}
                         </div>
