@@ -223,6 +223,7 @@ const VanAi = () => {
 
             // Clear the input fields
             setQuestion('');
+            document.getElementById('question').style.height='auto';
             setImageInput(null);
             setShowSuggestions(false);
             setNextSuggestions(false);

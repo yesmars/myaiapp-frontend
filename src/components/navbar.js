@@ -24,9 +24,13 @@ function AppNavbar({ toggleSidebar, showSidebar }) {
       <Navbar.Brand className="mx-auto">
         <img className='logo' src={`${process.env.PUBLIC_URL}/images/Olivia.svg`} alt="Logo" />
       </Navbar.Brand>
+     
       <Nav.Item className="nav-item toggle-sidebar" onClick={toggleSidebar}>
-        {showSidebar ? '<<<' : '>>>'}
+      <div className='control-toggle-sidebar'>
+        {showSidebar ? '<=' : '=>'}
+      </div>
       </Nav.Item>
+ 
       <Dropdown>
     <Dropdown.Toggle variant="success" id="dropdown-basic">
       Menu
