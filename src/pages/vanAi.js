@@ -276,7 +276,7 @@ const VanAi = () => {
         if (newThreadId && !currentThreadId) {
             setCurrentThreadId(newThreadId);
         }
-
+        console.log("Thread ID from the header:", newThreadId);
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
