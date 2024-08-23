@@ -271,8 +271,12 @@ const VanAi = () => {
                 setError('Failed to send message');
                 return;
             }
-        
-           
+           // Capture thread_id from response headers (case-sensitive)
+        const newThreadId = response.headers.get('X-Thread-Id');
+        if (newThreadId && !currentThreadId) {
+            setCurrentThreadId(newThreadId);
+        }
+
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
@@ -299,7 +303,7 @@ const VanAi = () => {
                     }
                     if (imagePart) {
                         const imageUrl = `data:image/${imagePart.trim()}`;
-                        console.log("Image URL: ", imageUrl); // Add this line to check the image URL
+                    
                         botMsg.content += `
                             <div>
                                 <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
@@ -311,7 +315,7 @@ const VanAi = () => {
                     }
                     if (audioPart) {
                         const audioUrl = `data:audio/${audioPart.trim()}`;
-                        console.log("Audio URL: ", audioUrl); // Add this line to check the audio URL
+                      
                         botMsg.content += `
                             <div>
                                 <audio controls>
@@ -338,7 +342,7 @@ const VanAi = () => {
                         botMsg.isImage = true;
                     } else if (output.startsWith('data:image/')) {
                         const imageUrl = output.trim();
-                        console.log("Image URL: ", imageUrl); // Add this line to check the image URL
+                 
                         botMsg.content = `
                             <div class="control-bot-image">
                                 <img src="${imageUrl}" class="bot-image" alt="Generated Image" style="width:50%; height:auto;" /> <br />
@@ -367,7 +371,7 @@ const VanAi = () => {
                         botMsg.isAudio = true;
                     } else if (output.startsWith('data:audio/')) {
                         const audioUrl = output.trim();
-                        console.log("Audio URL: ", audioUrl); // Add this line to check the audio URL
+                     
                         botMsg.content = `
                             <div>
                             <audio controls>
@@ -379,44 +383,11 @@ const VanAi = () => {
                         console.log("Bot Message audio: ", botMsg.content); // Add this line to check the bot message
 
                     }
-                /*} else if (output.includes('```')) {
-                    const codeBlockRegex = /```([\s\S]+?)```/g;
-                    const codeBlockMatches = output.match(codeBlockRegex);
-                    console.log("Code Block Matches: ", codeBlockMatches); // Add this line to check the code block matches 
-                    if (codeBlockMatches) {
-                        //const codeBlocks = codeBlockMatches.map((match) => match.replace(/```/g, ''));
-                        for (let i = 0; i < codeBlockMatches.length; i++) {
-                        let string=codeBlockMatches[i];
-                        const [textPart, ...moreText] = output.split(codeBlockRegex);
-                        console.log('text part:', textPart);
-                        console.log('more text:', moreText);
-                        
-                            const rawHtml = marked(textPart.trim());
-                            const cleanHtml = DOMPurify.sanitize(rawHtml);
-                            botMsg.content = cleanHtml;
-                            botMsg.content =
-                                    `<div class="code-block-container">
-                                        <button class="copy-code-button" data-code="${encodeURIComponent(string)}">Copy</button>
-                                        <div class="code-content">
-                                        ${marked(string, {
-                                            highlight: function (code, lang) {
-                                                const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
-                                                return `<code class="hljs ${language}">${highlightjs.highlight(code, { language }).value}</code>`;
-                                            },
-                                        })}
-                                        </div>
-                                    </div>`;
-                            }
-                            
-                        
-                    
-                    }*/
 
                 
                 } else {
                     
                     const rawHtml = marked(output);
-                    console.log("Raw HTML: ", rawHtml); // Add this line to check the raw HTML
                     const cleanHtml = DOMPurify.sanitize(rawHtml);
                   
                     botMsg.content = cleanHtml;
