@@ -468,15 +468,15 @@ body, html {
     }
 }
 .new-chat{
-    background-color: #7f9446;
+    background-color:  #28a745;
     color: beige;
     border: none;
-    padding: 10px;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
-    margin-top: 20px;
     text-align: center;
-    
+    justify-content: center;
+    align-items: center;
+ 
 }
 .new-chat:hover{
     background-color: #879dd3;
@@ -489,18 +489,20 @@ body, html {
 }
 .new-chat-button{
     text-align: center;
+    justify-content: center;
+    align-items: center;
 
 }
 
 .close-sidebar{
-    background-color: #7f9446;
-    color: #dbdbd3;
-    border: none;
-    
+    background-color:  beige;
+    color: #28a745;;
+    border: none; 
     border-radius: 2px;
     cursor: pointer;
-
+    align-items: center;
     text-align: center;
+    justify-content: center;
 }
 .close-sidebar:hover{
     background-color: #879dd3;

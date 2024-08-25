@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-
-
+import { IoSettings } from "react-icons/io5";
+import { GoSidebarCollapse } from "react-icons/go";
+import { GoSidebarExpand } from "react-icons/go";
 import './navbar.css';
 import { useAuth } from './authContext';
 import { Dropdown } from 'react-bootstrap';
@@ -24,16 +25,16 @@ function AppNavbar({ toggleSidebar, showSidebar }) {
       <Navbar.Brand className="mx-auto">
         <img className='logo' src={`${process.env.PUBLIC_URL}/images/Olivia.svg`} alt="Logo" />
       </Navbar.Brand>
-     
+    
       <Nav.Item className="nav-item toggle-sidebar" onClick={toggleSidebar}>
       <div className='control-toggle-sidebar'>
-        {showSidebar ? '<=' : '=>'}
+        {showSidebar ? <GoSidebarExpand />: <GoSidebarCollapse />}
       </div>
       </Nav.Item>
  
       <Dropdown>
     <Dropdown.Toggle variant="success" id="dropdown-basic">
-      Menu
+    <IoSettings />
     </Dropdown.Toggle>
 
     <Dropdown.Menu>

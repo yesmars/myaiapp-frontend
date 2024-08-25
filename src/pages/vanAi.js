@@ -10,8 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import highlightjs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css'; // Choose a style from highlight.js
-
-
+import { IoSend } from "react-icons/io5";
+import { FaFileCirclePlus } from "react-icons/fa6";
+import { IoMdCloseCircle } from "react-icons/io";
+import { IoCreateOutline } from "react-icons/io5";
 const VanAi = () => {
     const [question, setQuestion] = useState('');
     const [error, setError] = useState('');
@@ -111,7 +113,7 @@ const VanAi = () => {
     
     
     
-      marked.setOptions({
+    marked.setOptions({
         highlight: function (code, lang) {
             const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
             return highlightjs.highlight(code, { language }).value;
@@ -479,10 +481,10 @@ const VanAi = () => {
                 
                 <br />
                 <div className="sidebar-header" style={{textAlign:"right"}}>
-                <button className="close-sidebar" onClick={toggleSidebar}>X</button>
+                <button className="close-sidebar" onClick={toggleSidebar}><IoMdCloseCircle /></button>
                 </div>
                 <div className='new-chat-button' >
-                <button className="new-chat" onClick={() => createNewChat()}>create new chat</button>
+                <button className="new-chat" onClick={() => createNewChat()}><IoCreateOutline /></button>
                 </div>
                 {sidebarLoading ? (
                     <p>Loading...</p>
@@ -570,7 +572,7 @@ const VanAi = () => {
                     <div className="input-group">
                         <div className='button-wrapper'>
                             <div className='plus-button'>
-                            <label htmlFor="imageInput" className="file-input-label">+</label>
+                            <label htmlFor="imageInput" className="file-input-label"><FaFileCirclePlus /></label>
                             </div>
                         </div>
                             <input
@@ -601,7 +603,9 @@ const VanAi = () => {
                             />
                         </div>
                             <div className='button-control'>
-                            <Button type="submit" id="submit-button" className="submit-button">ask</Button>
+                            <Button type="submit" id="submit-button" className="submit-button">
+                                <IoSend />
+                            </Button>
                             </div>
                         </div>
                     </div>    
