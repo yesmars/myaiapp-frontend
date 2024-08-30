@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Base64AudioPlayer = ({ base64String }) => {
+const Base64AudioPlayer = ({ base64String,audioRef }) => {
     if (!base64String) {
         return null;
     }
@@ -13,7 +13,7 @@ const Base64AudioPlayer = ({ base64String }) => {
     };
 
     return (
-        <audio controls style={audioStyle}>
+        <audio ref={audioRef} controls style={audioStyle}>
             <source src={`data:audio/mp3;base64,${base64String}`} type="audio/mp3" />
             Your browser does not support the audio element.
         </audio>

@@ -14,6 +14,8 @@ import { IoSend } from "react-icons/io5";
 import { FaFileCirclePlus } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
 import { IoCreateOutline } from "react-icons/io5";
+import PronunciationUi from '../components/PronunicationUi';
+
 const VanAi = () => {
     const [question, setQuestion] = useState('');
     const [error, setError] = useState('');
@@ -29,6 +31,7 @@ const VanAi = () => {
     const [currentThreadId, setCurrentThreadId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const conversationDivRef = useRef(null);
+    
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
     const suggestions = [
@@ -36,6 +39,7 @@ const VanAi = () => {
         "Create a picture of a cute cat.",
         "generate an audio of the words I love you in Vietnamese please"
     ];
+
     const fileInputRef = useRef(null);
     const bottomRef = useRef(null);
       // Function to scroll to the bottom of the conversation
@@ -274,11 +278,11 @@ const VanAi = () => {
                 return;
             }
            // Capture thread_id from response headers (case-sensitive)
-        const newThreadId = response.headers.get('X-Thread-Id');
-        if (newThreadId && !currentThreadId) {
+            const newThreadId = response.headers.get('X-Thread-Id');
+            if (newThreadId && !currentThreadId) {
             setCurrentThreadId(newThreadId);
-        }
-        console.log("Thread ID from the header:", newThreadId);
+            }
+            console.log("Thread ID from the header:", newThreadId);
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
@@ -293,6 +297,8 @@ const VanAi = () => {
             while (true) {
                 const { done, value } = await reader.read();
                 output += new TextDecoder().decode(value || new Uint8Array(), { stream: !done });
+                console.log("Output at the top:", output);
+               
                 // Replace the `<div class="code-block-container">...</div>` blocks with a properly formatted copyable code block
                 if (output.includes('data:image/') && output.includes('data:audio/')) {
                     const [textPart, imageAndAudioPart] = output.split('data:image/');
@@ -387,8 +393,13 @@ const VanAi = () => {
                     }
 
                 
-                } else {
-                    
+                } 
+                else if(output.includes('"ui_code": "PronunciationUI"')){
+                    botMsg.ui_code = 'PronunciationUI';
+                 
+
+                }
+                else {
                     const rawHtml = marked(output);
                     const cleanHtml = DOMPurify.sanitize(rawHtml);
                   
@@ -516,21 +527,23 @@ const VanAi = () => {
                 <div className="conversation-container" id="conversation" ref={conversationDivRef} style={{ marginBottom: "60px" }}>
                     {conversation.map((msg, index) => (
                         <div className='message-container'>
-                        <div key={index} className={`${msg.type}-message`}>
-                            {msg.type === 'image' ? (
-                                <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'beige' }}>
-                                    <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
-                                </div>
-                            ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
-                                <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
-                            ) : msg.type === 'assistant' && typeof msg.content === 'string' ? (
-                                <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
-                            ) : (parse (marked(DOMPurify.sanitize(msg.content)))
+                            <div key={index} className={`${msg.type}-message`}>
+                                {msg.type === 'image' ? (
+                                    <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'beige' }}>
+                                        <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
+                                    </div>
+                                ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
+                                    <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
+                                ) : msg.type === 'assistant' && typeof msg.content === 'string' ? (
+                                    <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
+                                ) : (parse (marked(DOMPurify.sanitize(msg.content)))
 
-                            )}
-                        </div>
+                                )}
+                                 {msg.ui_code === 'PronunciationUI' && <PronunciationUi />}
+                            </div>
                         </div>
                     ))}
+                    
                     {showSuggestions && (
                         <Container className='card-container'>
                             <Row>
