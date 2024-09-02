@@ -48,9 +48,14 @@ function AppNavbar({ toggleSidebar, showSidebar }) {
           </LinkContainer>
         </>
       ) : (
+        <>
         <LinkContainer to="/home">
           <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
         </LinkContainer>
+        <LinkContainer to="/pronunciation">
+          <Dropdown.Item>Pronunciation</Dropdown.Item>
+        </LinkContainer>
+        </>
       )}
       <LinkContainer to="/vanai">
         <Dropdown.Item>Van-AI</Dropdown.Item>

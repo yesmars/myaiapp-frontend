@@ -44,7 +44,9 @@ function AppNavbar({ toggleSidebar, showSidebar }) {
           <LinkContainer to="/vanai">
             <Nav.Link className='nav-item'>Van-AI</Nav.Link>  
           </LinkContainer>
-          
+          <LinkContainer to="/pronunciation">
+            <Nav.Link className='nav-item'>Pronunciation</Nav.Link>
+            </LinkContainer>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

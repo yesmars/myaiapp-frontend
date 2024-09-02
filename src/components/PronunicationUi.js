@@ -2,13 +2,15 @@ import React, { useState, useRef,useEffect } from "react";
 import axios from "axios";
 import Base64AudioPlayer from "./b64audio";
 import { IoSend, IoMic, IoStop, IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
-
+import './PronunciationUi.css';
+import { RiSpeakLine } from "react-icons/ri";
 const PronunciationUi = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [word, setWord] = useState("");
   const [audio, setAudio] = useState("");
   const [recordedAudioUrl, setRecordedAudioUrl] = useState(""); // State for the recorded audio URL
   const[userPronunciation,setUserPronunciation]=useState(""); 
+  const[score,setScore]=useState(""); // State for the recorded audio URL
   const [error, setError] = useState("");
   const [feedBack, setFeedBack] = useState("");
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -90,7 +92,7 @@ const PronunciationUi = () => {
     const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
     audioChunksRef.current = [];
     const audioUrl = URL.createObjectURL(audioBlob);
-    setRecordedAudioUrl(audioUrl);
+    
 
     // Log the URL to verify it's being created correctly
     console.log("Recorded Audio URL:", audioUrl);
@@ -113,6 +115,9 @@ const PronunciationUi = () => {
       if (response.data.success) {
         setFeedBack(response.data.feedback);
         setUserPronunciation(response.data.user_pronunciation);
+        setRecordedAudioUrl(response.data.encoded_audio);
+        setScore(response.data.score);
+        console.log('encoded audio:',response.data.encoded_audio);
       } else {
         setError(response.data.error);
       }
@@ -132,25 +137,25 @@ const PronunciationUi = () => {
 
   return (
     <>
-      <div>
+    <div className="pronunciation">
+      <div className="title">
         <h1>Pronunciation</h1>
       </div>
-      <div>
-        {audio && <p>AI pronunciation for the word: "{word}"</p>}
-        {audio &&(
-          
-        <Base64AudioPlayer base64String={audio} audioRef={audioRef} />)}
+      <div className="both-audio">
+          <div className="AI-audio">
+            {audio && <p>Van AI <RiSpeakLine /> : "{word}"</p>}
+            {audio &&(
+              
+            <Base64AudioPlayer base64String={audio} audioRef={audioRef} />)}
+          </div>
+          <div className="user-audio">
+            {recordedAudioUrl && <p>You <RiSpeakLine />: "{word}"</p>}
+            {recordedAudioUrl && (
+            <Base64AudioPlayer className='user-audio-play' base64String={recordedAudioUrl} audioRef={audioRef} />
+            )}
+          </div>
       </div>
-      <div>
-        {recordedAudioUrl && <p>Your pronunciation of the word: "{word}"</p>}
-        {recordedAudioUrl && (
-          <audio ref={audioRef} controls>
-            <source src={recordedAudioUrl} type="audio/wav" />
-            Your browser does not support the audio element.
-          </audio>
-        )}
-      </div>
-      <div>
+      <div className="input-button">
         <form onSubmit={handleFormSubmit}>
           <input
             type="text"
@@ -164,13 +169,17 @@ const PronunciationUi = () => {
         </form>
       </div>
       <div>
-        { audio &&(
-        <button onClick={isRecording ? stopRecording : startRecording}>
-          {isRecording ? <IoStop /> : <IoMic />}
-          {isRecording ? " Done and check" : " Pronounce the word"}
-        </button>)}
+
+          <div className="record-button">
+          { audio &&(
+          <button className="record" onClick={isRecording ? stopRecording : startRecording}>
+            {isRecording ? <IoStop /> : <IoMic />}
+            {isRecording ? " Done and check" : " Pronounce the word"}
+          </button>)}
+          </div>
 
         <div>
+          <div className="feedback">
           {feedBack && (
             <p>
               {feedBack === "Correct Pronunciation" ? (
@@ -184,20 +193,32 @@ const PronunciationUi = () => {
               )}
             </p>
           )}
+          </div>
+          <div className="feedback">
           {feedBack==="Incorrect Pronunciation" && (
             <p>
               what you need to say is : {word}
             </p>
           )}
+          </div>
+          <div className="feedback">
           {feedBack==="Incorrect Pronunciation" && (
             <p>
               what you might have said is : {userPronunciation}
             </p>)}
+          </div>
+          <div className="score">
+          {feedBack && (
+            <p>
+              Your score is : {score}
+            </p>)}
+          </div>
         </div>
       </div>
       <div>
         {error && <p>{error}</p>}
       </div>
+    </div>
     </>
   );
 };

@@ -1,0 +1,63 @@
+/* css for the PronunciationUi component */
+
+.both-audio {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-around;
+    margin: 10px;
+    width: 100%;
+}
+.AI-audio {
+    flex-grow: 1;
+    display: inline;
+    justify-content: center;
+    margin: 10px;
+}
+.user-audio {
+    display: inline;
+    margin: 10px;
+    flex-grow: 1;
+}
+.input-button {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+}
+.title{
+    display: flex;
+    justify-content: center;
+}
+.record-button{
+   display: flex;
+    justify-content: center;
+    border-radius: 5px;
+}
+.record{
+    background-color: greenyellow;
+    border-radius: 5px;
+}
+.record:hover{
+    background-color: #28a745;
+}
+.score{
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    background-color:white;
+    border-radius: 5px;
+}
+.feedback{
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    border-radius: 5px;
+}
+.user-audio-play{
+    background-color: burlywood;
+}
+
+.pronunciation{
+    background-color:beige;
+    height: 100%;
+    flex-grow: 1;
+}

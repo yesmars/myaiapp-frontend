@@ -12,6 +12,7 @@ import AdminLogin from './pages/AdminLogin';
 import Testaudio from './pages/test';
 import UserQuestion from './pages/userQuestion';
 import Conversations from './pages/conversations';
+import PronunciationUi from './components/PronunicationUi';
 function App() {
   return (
     <div>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/test" element={<Testaudio />} />
         <Route path="/user-question" element={<UserQuestion />} />
         <Route path="/retrieve-message" element={<><PrivateRoute element={Conversations}/></>} />
+        <Route path="/pronunciation" element={<><PrivateRoute element={PronunciationUi}/></>} />
         {/* The HeroSection is now part of the Home route */}
         {/* Add other routes here */}
       </Routes>
