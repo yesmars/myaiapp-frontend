@@ -542,6 +542,7 @@ const VanAi = () => {
                                  {msg.ui_code === 'PronunciationUI' && <PronunciationUi />}
                             </div>
                         </div>
+                        
                     ))}
                     
                     {showSuggestions && (
@@ -564,7 +565,9 @@ const VanAi = () => {
                             </div>
                         </div>
                     )}
+                    {error && <div className="error-message">{error}</div>}
                     <div ref={bottomRef} />
+
                 </div>
             </div>
             
@@ -624,7 +627,7 @@ const VanAi = () => {
                     </div>    
                 </div>
             </Form>
-            {error && <div className="error-message">{error}</div>}
+            
             <div ref={bottomRef} />
         </div>
     );

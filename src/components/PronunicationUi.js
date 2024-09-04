@@ -4,6 +4,8 @@ import Base64AudioPlayer from "./b64audio";
 import { IoSend, IoMic, IoStop, IoCheckmarkCircleSharp, IoCloseCircleSharp } from "react-icons/io5";
 import './PronunciationUi.css';
 import { RiSpeakLine } from "react-icons/ri";
+import RecordRTC from 'recordrtc';
+
 const PronunciationUi = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [word, setWord] = useState("");
@@ -15,9 +17,8 @@ const PronunciationUi = () => {
   const [feedBack, setFeedBack] = useState("");
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const audioRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
-
+  const [recorder, setRecorder] = useState(null);
+  
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -69,13 +70,15 @@ const PronunciationUi = () => {
     setFeedBack("");
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then(stream => {
-        mediaRecorderRef.current = new MediaRecorder(stream);
-        audioChunksRef.current = [];
-        mediaRecorderRef.current.ondataavailable = event => {
-          audioChunksRef.current.push(event.data);
-        };
-        mediaRecorderRef.current.onstop = handleRecordingStop;
-        mediaRecorderRef.current.start();
+        const newRecorder = RecordRTC(stream, {
+          type: 'audio',
+          mimeType: 'audio/webm',
+          recorderType: RecordRTC.StereoAudioRecorder,
+          numberOfAudioChannels: 1,
+          desiredSampRate: 16000,
+        });
+        newRecorder.startRecording();
+        setRecorder(newRecorder);
         setIsRecording(true);
       })
       .catch(err => {
@@ -84,25 +87,18 @@ const PronunciationUi = () => {
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current.stop();
-    setIsRecording(false);
-  };
-
-  const handleRecordingStop = () => {
-    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-    audioChunksRef.current = [];
-    const audioUrl = URL.createObjectURL(audioBlob);
-    
-
-    // Log the URL to verify it's being created correctly
-    console.log("Recorded Audio URL:", audioUrl);
-
-    sendAudioToBackend(audioBlob);
+    if (recorder) {
+      recorder.stopRecording(() => {
+        const blob = recorder.getBlob();
+        sendAudioToBackend(blob);
+        setIsRecording(false);
+      });
+    }
   };
 
   const sendAudioToBackend = async (audioBlob) => {
     const formData = new FormData();
-    formData.append('audio', audioBlob);
+    formData.append('audio', audioBlob, 'recording.webm');
     formData.append('word', word);
     try {
       const response = await axios.post(`${API_BASE_URL}/pronunciation_feedback`, formData, {
