@@ -33,11 +33,11 @@
     border-radius: 5px;
 }
 .record{
-    background-color: greenyellow;
+    background-color: rgb(249, 255, 84);
     border-radius: 5px;
 }
 .record:hover{
-    background-color: #28a745;
+    background-color: #92ffab;
 }
 .score{
     display: flex;

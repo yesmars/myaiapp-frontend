@@ -182,7 +182,7 @@ body, html {
     font-size: 16px;
     resize: vertical;
     overflow: hidden;
-    background-color: beige;
+    background-color:rgb(255, 255, 156);
     border-color: beige;
     border-radius: 10px;
     width: 100%;
@@ -191,6 +191,7 @@ body, html {
 }
 
 .text-area{
+    
     flex-grow: 1;
     justify-content: center;
     overflow-y: hidden;

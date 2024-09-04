@@ -18,7 +18,7 @@ const PronunciationUi = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const audioRef = useRef(null);
   const [recorder, setRecorder] = useState(null);
-  
+  const [loading, setLoading] = useState(false);
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,7 +26,7 @@ const PronunciationUi = () => {
       setError("Please enter a word.");
       return;
     }
-
+    setLoading(true);
     setAudio("");
     setError("");
     setRecordedAudioUrl("");
@@ -51,6 +51,7 @@ const PronunciationUi = () => {
     } catch (err) {
       setError('An error occurred. Please try again.');
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -100,6 +101,7 @@ const PronunciationUi = () => {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'recording.webm');
     formData.append('word', word);
+    setLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/pronunciation_feedback`, formData, {
         headers: {
@@ -120,6 +122,7 @@ const PronunciationUi = () => {
     } catch (err) {
       setError('An error occurred. Please try again.');
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -161,14 +164,14 @@ const PronunciationUi = () => {
             placeholder="Enter a word"
             onChange={(e) => setWord(e.target.value)}
           />
-          <button type="submit"><IoSend /></button>
+          <button type="submit" disabled={loading}><IoSend /></button>
         </form>
       </div>
       <div>
 
           <div className="record-button">
           { audio &&(
-          <button className="record" onClick={isRecording ? stopRecording : startRecording}>
+          <button className="record" disabled={loading} onClick={isRecording ? stopRecording : startRecording}>
             {isRecording ? <IoStop /> : <IoMic />}
             {isRecording ? " Done and check" : " Pronounce the word"}
           </button>)}
