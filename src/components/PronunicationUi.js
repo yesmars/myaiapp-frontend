@@ -19,6 +19,8 @@ const PronunciationUi = () => {
   const audioRef = useRef(null);
   const [recorder, setRecorder] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // handle submit for getting audio from the backend AI
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -61,15 +63,15 @@ const PronunciationUi = () => {
   }, [audio]);  // This effect runs whenever the audio state changes
 
 
-  //step 2
+  //step 2: recording user voice and sending it to the backend for comparison
   const startRecording = () => {
     if (!word.trim()) {
       setError("Please submit a word and listen to its pronunciation before recording.");
       return;
-    }
-    setError("");
-    setFeedBack("");
-    navigator.mediaDevices.getUserMedia({ audio: true })
+    }  // check if the user has submitted a word before recording
+    setError(""); // Clear any previous errors
+    setFeedBack("");// Clear any previous feedback
+    navigator.mediaDevices.getUserMedia({ audio: true })// Get audio stream from the user's microphone
       .then(stream => {
         const newRecorder = RecordRTC(stream, {
           type: 'audio',
@@ -77,11 +79,11 @@ const PronunciationUi = () => {
           recorderType: RecordRTC.StereoAudioRecorder,
           numberOfAudioChannels: 1,
           desiredSampRate: 16000,
-        });
+        }); // Create a new recorder instance
         newRecorder.startRecording();
         setRecorder(newRecorder);
         setIsRecording(true);
-      })
+      }) // Start recording 
       .catch(err => {
         setError("Failed to access microphone: " + err.message);
       });
@@ -95,12 +97,12 @@ const PronunciationUi = () => {
         setIsRecording(false);
       });
     }
-  };
+  };// Stop recording and send the audio to the backend
 
   const sendAudioToBackend = async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.webm');
-    formData.append('word', word);
+    const formData = new FormData(); // Create a new FormData instance
+    formData.append('audio', audioBlob, 'recording.webm');// Append the audio blob to the form data
+    formData.append('word', word); // Append the word to the form data
     setLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/pronunciation_feedback`, formData, {
@@ -205,6 +207,12 @@ const PronunciationUi = () => {
             <p>
               what you might have said is : {userPronunciation}
             </p>)}
+          </div>
+          <div className="feedback">
+            {feedBack==="Correct Pronunciation" && (
+              <p>
+              You said : {userPronunciation}
+              </p>)}
           </div>
           <div className="score">
           {feedBack && (

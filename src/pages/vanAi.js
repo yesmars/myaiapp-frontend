@@ -31,13 +31,14 @@ const VanAi = () => {
     const [currentThreadId, setCurrentThreadId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const conversationDivRef = useRef(null);
-    
+    const [userHasScrolled, setUserHasScrolled] = useState(false);
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
     const suggestions = [
         "Tell me a joke.",
         "Create a picture of a cute cat.",
-        "generate an audio of the words I love you in Vietnamese please"
+        "generate an audio of the words I love you in Vietnamese please",
+        " I want to practice pronunciation"
     ];
 
     const fileInputRef = useRef(null);
@@ -46,11 +47,22 @@ const VanAi = () => {
       const scrollToBottom = () => {
         bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     };
-   
+    useEffect(() => {
+        const handleScroll = () => {
+            setUserHasScrolled(true);
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+    
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [conversation]);
     //scroll to the bottom of the conversation  when the conversation state changes
     useEffect(() => {
-        scrollToBottom();
-    }, [conversation]);
+        if(!userHasScrolled){
+        scrollToBottom();}
+    }, [conversation,userHasScrolled]);
     
     // Apply syntax highlighting after conversation updates
     useEffect(() => {
@@ -445,7 +457,7 @@ const VanAi = () => {
             setError('An error occurred. Please try again.');
 
         }
-        scrollToBottom();
+       
         
        
     };

@@ -71,4 +71,10 @@
   }
 }
 
+
+.dropdown-menu-left 
+{
+  right: 0 !important;
+  left: auto;
+}
 /* Keep other styles as they were */

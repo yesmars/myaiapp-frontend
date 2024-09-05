@@ -32,12 +32,12 @@ function AppNavbar({ toggleSidebar, showSidebar }) {
       </div>
       </Nav.Item>
  
-      <Dropdown>
-    <Dropdown.Toggle variant="success" id="dropdown-basic">
+      <Dropdown align="end">
+    <Dropdown.Toggle variant="success" id="dropdown-basic" >
     <IoSettings />
     </Dropdown.Toggle>
 
-    <Dropdown.Menu>
+    <Dropdown.Menu >
       {!isLoggedIn ? (
         <>
           <LinkContainer to="/login">
