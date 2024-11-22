@@ -33,7 +33,7 @@ const VanAi = () => {
 // note-fetching functionality
     const { allNotesTitles, handleNoteItemClick, selectedNoteTitle, selectedNoteContent, showNotes, setShowNotes, noteId, handleNoteUpdate, handleNoteDelete, fetchNoteTitles } = useNoteFetching();
 // Note-taking functionality
-    const {notes, addNote, highlightPosition, handleMouseUp,
+    const {notes, addNote, highlightPosition, 
         isModalOpen, setIsModalOpen, noteTitle, setNoteTitle, noteContent, setNoteContent, saveNote
              } = useNoteTaking(API_BASE_URL); // Custom hook for note-taking
 // Custom hook for handling conversation logic
@@ -108,14 +108,7 @@ const VanAi = () => {
           fileInputRef.current.value = '';
         }
       };
-    // add event listener for text selected
-    useEffect(() => {
-        document.addEventListener('mouseup', handleMouseUp);
-        
-        return () => {
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [handleMouseUp]);
+  
    const handleOnAddNoteClick = () => {
         addNote();
         setIsModalOpen(true);

@@ -1,5 +1,5 @@
 import { selectHighLightedText } from "../utilityFunction/selectHighLightedText";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 const useNoteTaking = (API_BASE_URL) => {
@@ -57,15 +57,29 @@ const useNoteTaking = (API_BASE_URL) => {
             console.error("Error saving note:", error);
         }
     };
-// Function to handle mouse up event
-    const handleMouseUp = (event) => {
-        const highlightedText = selectHighLightedText();
-        if (highlightedText) {
-            const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
-            setHighlightPosition({ top: rect.bottom, left: rect.left });
-        } else {
-            setHighlightPosition(null);
-    };};
+// Function to handle mouse up and touch end events
+const handleMouseUpOrTouchEnd = useCallback( (event) => {
+    const highlightedText = selectHighLightedText();
+    if (highlightedText) {
+        const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+        setHighlightPosition({ top: rect.bottom, left: rect.left });
+        console.log('highlighted position', highlightPosition);
+    } else {
+        setHighlightPosition(null);
+    }
+}, [highlightPosition]);
+
+// Add event listeners for both mouseup and touchend
+useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUpOrTouchEnd);
+    document.addEventListener('touchend', handleMouseUpOrTouchEnd);
+
+    // Cleanup event listeners on component unmount
+    return () => {
+        document.removeEventListener('mouseup', handleMouseUpOrTouchEnd);
+        document.removeEventListener('touchend', handleMouseUpOrTouchEnd);
+    };
+}, [handleMouseUpOrTouchEnd]);
 
 // Update note content when modal opens
     useEffect(() => {
@@ -76,7 +90,7 @@ const useNoteTaking = (API_BASE_URL) => {
     }, [isModalOpen]);
 
 
-    return { notes, addNote, highlightPosition, handleMouseUp, isModalOpen, setIsModalOpen, noteTitle, setNoteTitle, noteContent, setNoteContent, saveNote };
+    return { notes, addNote, highlightPosition, handleMouseUpOrTouchEnd, isModalOpen, setIsModalOpen, noteTitle, setNoteTitle, noteContent, setNoteContent, saveNote };
 }
 
 export default useNoteTaking;
