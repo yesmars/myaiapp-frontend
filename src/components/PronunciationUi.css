@@ -3,7 +3,7 @@
 .both-audio {
     flex-grow: 1;
     display: flex;
-    justify-content: space-around;
+  
     margin: 10px;
     width: 100%;
 }
@@ -12,11 +12,13 @@
     display: inline;
     justify-content: center;
     margin: 10px;
+    
 }
 .user-audio {
     display: inline;
     margin: 10px;
     flex-grow: 1;
+   justify-content: center;
 }
 .input-button {
     margin: 10px;
@@ -57,7 +59,11 @@
 }
 
 .pronunciation{
-    background-color:beige;
+   
+    background-color:rgb(220, 245, 222);
     height: 100%;
     flex-grow: 1;
+    border-radius: 1rem;
+    padding: 1rem;
+    justify-content: center;
 }

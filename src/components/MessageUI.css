@@ -1,0 +1,115 @@
+/* Chat messages */
+.bot-message, .assistant-message {
+    background-color: beige;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-message {
+    color: orange;
+    background-color: #fff3e0;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.user-image {
+    margin: 5px 0;
+    border-radius: 5px;
+    width: 50%;
+    background-color: beige;
+}
+.image-message{
+    margin: 5px 0;
+    border-radius: 5px;
+    width: 50%;
+    background-color: beige;
+}
+.control-bot-image{
+    display: flex;
+    justify-content: center;
+
+    border-radius: 20px;
+}
+.bot-image{
+    margin: 5px 0;
+    border-radius: 20px;
+    width: 50%;
+    background-color: beige;
+}
+.control-audio{
+    display: flex;
+    justify-content: center;
+    border-radius: 20px;
+}
+/* Chat messages */
+.user-message {
+    
+    background-color: #7f9446;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 20px;
+    color: beige;
+    
+    
+}
+
+/* code block */
+.code-block-container {
+    position: relative;
+    margin: 1em 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border-radius: 5px;
+}
+  
+.copy-code-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    z-index: 10;
+    transition: background-color 0.3s;
+}
+
+.copy-code-button:hover {
+    background-color: #0056b3;
+}
+.code-content {
+    position: relative;
+}
+
+pre {
+   
+    
+    background-color: beige;
+    color: rgb(16, 15, 15);
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+code {
+    position: relative;
+    font-family: 'Courier New', Courier, monospace;
+    display: inline-block;
+    max-width: 100%;
+    justify-content: center;
+}

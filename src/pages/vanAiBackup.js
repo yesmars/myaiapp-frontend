@@ -7,13 +7,20 @@ import AppNavbar from '../components/navbar';
 import SuggestionCard from '../components/SuggestionCards';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
 import axios from 'axios';
+import highlightjs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css'; // Choose a style from highlight.js
+import { IoSend } from "react-icons/io5";
+import { FaFileCirclePlus } from "react-icons/fa6";
+import { IoMdCloseCircle } from "react-icons/io";
+import { IoCreateOutline } from "react-icons/io5";
+import PronunciationUi from '../components/PronunicationUi';
 
 const VanAi = () => {
     const [question, setQuestion] = useState('');
     const [error, setError] = useState('');
     const [imageInput, setImageInput] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
     const [conversation, setConversation] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(true);
     const [nextSuggestions, setNextSuggestions] = useState([]);
@@ -22,26 +29,112 @@ const VanAi = () => {
     const [sidebarLoading, setSidebarLoading] = useState(true);
     const [sidebarError, setSidebarError] = useState('');
     const [currentThreadId, setCurrentThreadId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const conversationDivRef = useRef(null);
+    const [userHasScrolled, setUserHasScrolled] = useState(false);
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
+
     const suggestions = [
         "Tell me a joke.",
         "Create a picture of a cute cat.",
-        "generate an audio of the words I love you in Vietnamese please"
+        "Generate an audio of the words 'I love you' in Vietnamese please",
+        "I want to practice pronunciation"
     ];
     const fileInputRef = useRef(null);
     const bottomRef = useRef(null);
-    // Function to scroll to the bottom of the conversation
-    const scrollToBottom = () => {
+      // Function to scroll to the bottom of the conversation
+      const scrollToBottom = () => {
         bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     };
-   
+    useEffect(() => {
+        const handleScroll = () => {
+            setUserHasScrolled(true);
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+    
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [conversation]);
     //scroll to the bottom of the conversation  when the conversation state changes
     useEffect(() => {
-        scrollToBottom();
+        if(!userHasScrolled){
+        scrollToBottom();}
+    }, [conversation,userHasScrolled]);
+    
+    // Apply syntax highlighting after conversation updates
+    useEffect(() => {
+        highlightjs.highlightAll();
     }, [conversation]);
 
+    useEffect(() => {
+        const handleCopyClick = (event) => {
+            if (event.target && event.target.className === 'copy-code-button') {
+                const code = event.target.nextElementSibling.textContent;
+                navigator.clipboard.writeText(code);
+    
+                const originalText = event.target.textContent;
+                event.target.textContent = 'Copied!';
+                setTimeout(() => {
+                    if (event.target) {
+                        event.target.textContent = originalText;
+                    }
+                }, 2000);
+            }
+        };
+    
+        const addCopyButtons = () => {
+            // Remove existing copy buttons to prevent duplication
+            const existingButtons = document.querySelectorAll('.copy-code-button');
+            existingButtons.forEach(button => button.remove());
+    
+            // Add new copy buttons
+            const codeElements = document.querySelectorAll('pre code');
+            codeElements.forEach((element) => {
+                // Create a wrapping container (if not already wrapped)
+                let wrapper = element.parentElement;
+                if (!wrapper.classList.contains('code-block-container')) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'code-block-container';
+                    element.parentNode.insertBefore(wrapper, element);
+                    wrapper.appendChild(element);
+                }
+    
+                // Create and insert the copy button
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy';
+                copyButton.className = 'copy-code-button';
+    
+                // Insert the copy button at the top right
+                wrapper.insertBefore(copyButton, wrapper.firstChild);
+            });
+        };
+    
+        // Attach click event listener
+        document.addEventListener('click', handleCopyClick);
+    
+        // Add copy buttons
+        addCopyButtons();
+    
+        // Cleanup event listener on component unmount
+        return () => {
+            document.removeEventListener('click', handleCopyClick);
+        };
+    }, [conversation]); // Only rerun this effect when the conversation changes
+    
+    
+    
+    
+    
+    
+    marked.setOptions({
+        highlight: function (code, lang) {
+            const language = highlightjs.getLanguage(lang) ? lang : 'plaintext';
+            return highlightjs.highlight(code, { language }).value;
+        },
+    });
     // Function to toggle the sidebar
     const fetchConversations = useCallback(async () => {
         const token = localStorage.getItem('token');
@@ -65,7 +158,7 @@ const VanAi = () => {
                 setConversations([]);
             } else {
                 setConversations(response.data);
-                console.log("Conversations: ", response.data);
+               
             }
         } catch (err) {
             if (err.response) {
@@ -94,11 +187,39 @@ const VanAi = () => {
         fetchConversations();
     }, [fetchConversations]);
 
+    const handleTextAreaInput = (e) => {
+        setQuestion(e.target.value);
+        // Adjust textarea height automatically
+        e.target.style.height = "auto";
+        e.target.style.height = e.target.scrollHeight + "px";
+    };
+
     
-   
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageInput(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result); // Set the preview here
+                setQuestion(question);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImageInput(null);
+        setImagePreview('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     // Function to handle form submission
     const handleSubmit = async (e, question, imageInput) => {
-       
+        
         if (e) e.preventDefault();
         try {
             if (!question && !imageInput) {
@@ -120,10 +241,12 @@ const VanAi = () => {
 
             // Clear the input fields
             setQuestion('');
+            document.getElementById('question').style.height='auto';
             setImageInput(null);
             setShowSuggestions(false);
             setNextSuggestions(false);
             scrollToBottom();
+            setImagePreview('');
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -140,13 +263,13 @@ const VanAi = () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 localStorage.removeItem('token');
-                console.log("check Token: ", token); // Add this line to check the token
+         
                 navigate('/login');
                 setError('User not authenticated');
                 return;
             }
-            console.log("Token: ", token); // Add this line to check the token
-
+          
+            setIsLoading(true);
             const response = await fetch(`${API_BASE_URL}/vanai`, {
                 method: 'POST',
                 headers: {
@@ -166,7 +289,12 @@ const VanAi = () => {
                 setError('Failed to send message');
                 return;
             }
-
+           // Capture thread_id from response headers (case-sensitive)
+            const newThreadId = response.headers.get('X-Thread-Id');
+            if (newThreadId && !currentThreadId) {
+            setCurrentThreadId(newThreadId);
+            }
+            console.log("Thread ID from the header:", newThreadId);
             // Read the response as a stream
             const reader = response.body.getReader();
             let output = '';
@@ -181,7 +309,9 @@ const VanAi = () => {
             while (true) {
                 const { done, value } = await reader.read();
                 output += new TextDecoder().decode(value || new Uint8Array(), { stream: !done });
-                console.log("Output: ", output); // Add this line to check the output
+                console.log("Output at the top:", output);
+               
+                // Replace the `<div class="code-block-container">...</div>` blocks with a properly formatted copyable code block
                 if (output.includes('data:image/') && output.includes('data:audio/')) {
                     const [textPart, imageAndAudioPart] = output.split('data:image/');
                     const [imagePart, audioPart] = imageAndAudioPart.split('data:audio/');
@@ -193,7 +323,7 @@ const VanAi = () => {
                     }
                     if (imagePart) {
                         const imageUrl = `data:image/${imagePart.trim()}`;
-                        console.log("Image URL: ", imageUrl); // Add this line to check the image URL
+                    
                         botMsg.content += `
                             <div>
                                 <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
@@ -205,7 +335,7 @@ const VanAi = () => {
                     }
                     if (audioPart) {
                         const audioUrl = `data:audio/${audioPart.trim()}`;
-                        console.log("Audio URL: ", audioUrl); // Add this line to check the audio URL
+                      
                         botMsg.content += `
                             <div>
                                 <audio controls>
@@ -223,8 +353,8 @@ const VanAi = () => {
                         botMsg.content = cleanHtml;
                         const imageUrl = `data:image/${imagePart.trim()}`;
                         botMsg.content += `
-                            <div>
-                                <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
+                            <div class="control-bot-image">
+                                <img src="${imageUrl}" class="bot-image" alt="Generated Image" style="border-radius:20px; width:50%; height:auto;" /> <br />
                                 <div style="text-align: right;">
                                     <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
                                 </div>
@@ -232,10 +362,10 @@ const VanAi = () => {
                         botMsg.isImage = true;
                     } else if (output.startsWith('data:image/')) {
                         const imageUrl = output.trim();
-                        console.log("Image URL: ", imageUrl); // Add this line to check the image URL
+                 
                         botMsg.content = `
-                            <div>
-                                <img src="${imageUrl}" alt="Generated Image" style="width:50%; height:auto;" /> <br />
+                            <div class="control-bot-image">
+                                <img src="${imageUrl}" class="bot-image" alt="Generated Image" style="width:50%; height:auto;" /> <br />
                                 <div style="text-align: right;">
                                     <a href="${imageUrl}" download="generated_image.jpg" class="download-button">Download</a>
                                 </div>
@@ -252,7 +382,7 @@ const VanAi = () => {
                         botMsg.content = cleanHtml;
                         const audioUrl = `data:audio/${audioPart.trim()}`;
                         botMsg.content += `
-                        <div>
+                        <div class="control-audio">
                         <audio controls>
                             <source src="${audioUrl}" type="audio/mpeg" />
                             Your browser does not support the audio element.
@@ -261,7 +391,7 @@ const VanAi = () => {
                         botMsg.isAudio = true;
                     } else if (output.startsWith('data:audio/')) {
                         const audioUrl = output.trim();
-                        console.log("Audio URL: ", audioUrl); // Add this line to check the audio URL
+                     
                         botMsg.content = `
                             <div>
                             <audio controls>
@@ -273,22 +403,37 @@ const VanAi = () => {
                         console.log("Bot Message audio: ", botMsg.content); // Add this line to check the bot message
 
                     }
-                } else {
-                    
+
+                
+                } 
+                else if(output.includes('"ui_code": "PronunciationUI"')){
+                    botMsg.ui_code = 'PronunciationUI';
+                 
+
+                }
+                else {
                     const rawHtml = marked(output);
                     const cleanHtml = DOMPurify.sanitize(rawHtml);
+                  
                     botMsg.content = cleanHtml;
+                  
                     botMsg.isImage = false;
                     botMsg.isAudio = false;
                     if (botMsg.content === '') {
                         botMsg.content = "I'm sorry, an error occurred. Please try to log out and login again.";
                     }
                 }
-                console.log("Bot Message: ", botMsg.content); // Add this line to check the bot message
+               
                 setConversation([...newConversation]);
 
                 if (done) break;
             }
+
+            // Apply syntax highlighting after setting the conversation
+            setTimeout(() => {
+                highlightjs.highlightAll();
+            }, 0);
+            setIsLoading(false);
             // Fetch the next suggestions
             const textResponse = stripHtmlTags(botMsg.content);
             const nextSuggestionsResponse = await fetch(`${API_BASE_URL}/suggestions`, {
@@ -301,19 +446,19 @@ const VanAi = () => {
             });
 
             if (!nextSuggestionsResponse.ok) {
-                setError('Failed to fetch suggestions');
+                setError('');
                 return;
             }
             const nextSuggestionsData = await nextSuggestionsResponse.json();
 
             setNextSuggestions(nextSuggestionsData);
-            console.log("Next Suggestions: ", nextSuggestionsData); // Add this line to check the next suggestions
         } catch (error) {
             console.error("Error:", error);
             setError('An error occurred. Please try again.');
 
         }
-        scrollToBottom();
+       
+        
        
     };
 
@@ -336,7 +481,8 @@ const VanAi = () => {
         // Parse the conversation log and set it to the conversation state
         const parsedConversation = conversation_log.slice().reverse().map((msg) => {
             const [type, ...contentArray] = msg.split(': ');
-            const content = marked(contentArray.join(': '));
+            let preContent=contentArray.join(': ');
+            const content = marked(preContent);
             return { type: type.trim().toLowerCase(), content };
         });
         setConversation(parsedConversation);
@@ -351,13 +497,6 @@ const VanAi = () => {
     return (
         <div className={`vanAi-container ${showSidebar ? 'sidebar-open' : ''}`}>
             <AppNavbar toggleSidebar={toggleSidebar} showSidebar={showSidebar}/>
-            
-            {/*!showSidebar && (
-            <button className="toggle-sidebar" onClick={toggleSidebar}>
-                {showSidebar ? '<<' : '>>'}
-            </button>
-            )*/}
-            
             <div className={`conversation-sidebar ${showSidebar ? 'show' : ''}`}>
                 <br />
                 
@@ -365,10 +504,10 @@ const VanAi = () => {
                 
                 <br />
                 <div className="sidebar-header" style={{textAlign:"right"}}>
-                <button className="close-sidebar" onClick={toggleSidebar}>X</button>
+                <button className="close-sidebar" onClick={toggleSidebar}><IoMdCloseCircle /></button>
                 </div>
                 <div className='new-chat-button' >
-                <button className="new-chat" onClick={() => createNewChat()}>create new chat</button>
+                <button className="new-chat" onClick={() => createNewChat()}><IoCreateOutline /></button>
                 </div>
                 {sidebarLoading ? (
                     <p>Loading...</p>
@@ -384,7 +523,7 @@ const VanAi = () => {
                                 <li key={thread_id} className="conversation-item" onClick={() => handleConversationClick(thread_id, conversation_log)}>
                                     <br />
                                     <p style={{ fontWeight: 'bold', textAlign: 'left' }}>{parse(marked(summary))}</p>
-                                    {console.log("Sumary: ", summary)}
+                                    
                                     
                                 </li>
                             );
@@ -400,21 +539,26 @@ const VanAi = () => {
                 <div className="conversation-container" id="conversation" ref={conversationDivRef} style={{ marginBottom: "60px" }}>
                     {conversation.map((msg, index) => (
                         <div className='message-container'>
-                        <div key={index} className={`${msg.type}-message`}>
-                            {msg.type === 'image' ? (
-                                <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'black', paddingTop:"10%", paddingBottom:'10%' }}>
-                                    <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
-                                </div>
-                            ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
-                                <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
-                            ) : (
-                                parse(DOMPurify.sanitize(msg.content))
-                            )}
+                            <div key={index} className={`${msg.type}-message`}>
+                                {msg.type === 'image' ? (
+                                    <div style={{ display: 'flex', justifyContent:'center', backgroundColor:'beige' }}>
+                                        <img src={msg.content} alt="User Upload" style={{ width: '50%' }} />
+                                    </div>
+                                ) : msg.type === 'bot' && typeof msg.content === 'string' ? (
+                                    <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
+                                ) : msg.type === 'assistant' && typeof msg.content === 'string' ? (
+                                    <div dangerouslySetInnerHTML={{ __html: msg.content }}></div>
+                                ) : (parse (marked(DOMPurify.sanitize(msg.content)))
+
+                                )}
+                                 {msg.ui_code === 'PronunciationUI' && <PronunciationUi />}
+                            </div>
                         </div>
-                        </div>
+                        
                     ))}
+                    
                     {showSuggestions && (
-                        <Container>
+                        <Container className='card-container'>
                             <Row>
                                 {suggestions.map((suggestion, index) => (
                                     <Col key={index} md={4}>
@@ -433,21 +577,69 @@ const VanAi = () => {
                             </div>
                         </div>
                     )}
+                    {error && <div className="error-message">{error}</div>}
                     <div ref={bottomRef} />
+
                 </div>
             </div>
             
-            <Form onSubmit={(e) => handleSubmit(e, question, imageInput)}  encType="multipart/form-data">
-            
+            <Form onSubmit={(e) => handleSubmit(e, question, imageInput)} encType="multipart/form-data">
                 <div className='input-container'>
-                    <div className="input-group"> 
-                        <input type="file" ref={fileInputRef} id="imageInput" name="imageInput" accept="image/*" onChange={(e) => setImageInput(e.target.files[0])} />
-                        <input type="text" id="question" name="question" className="input-field" value={question} onChange={(e) => setQuestion(e.target.value)} />
-                        <Button type="submit" id="submit-button" className="submit-button">Submit</Button>
-                    </div>
+                        <div className='control-image'>
+                        {imagePreview && (
+                            <div className="image-preview">
+                                <div className='image-itself'>
+                                <img src={imagePreview} alt="Selected" style={{ width: '100px', height: 'auto', margin: '10px 0' }} />
+                                </div>
+                                <button type="button" className="remove-image" onClick={handleRemoveImage}>X</button>
+                            </div>
+                        )}
+                        </div>
+                <div className='file-text-button'>
+                        
+                    <div className="input-group">
+                        <div className='button-wrapper'>
+                            <div className='plus-button'>
+                            <label htmlFor="imageInput" className="file-input-label"><FaFileCirclePlus /></label>
+                            </div>
+                        </div>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                id="imageInput"
+                                name="imageInput"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                            />
+                            <div className='text-area'>
+                            <textarea
+                                id="question"
+                                name="question"
+                                className="input-field"
+                                value={question}
+                                onChange={handleTextAreaInput}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleSubmit(e, question, imageInput);
+                                    }
+                                }}
+                                placeholder="Ask something..."
+                                rows={1}
+                                disabled={isLoading}
+                            />
+                        </div>
+                            <div className='button-control'>
+                            <Button type="submit" id="submit-button" className="submit-button">
+                                <IoSend />
+                            </Button>
+                            </div>
+                        </div>
+                    </div>    
                 </div>
             </Form>
-            {error && <div className="error-message">{error}</div>}
+            
             <div ref={bottomRef} />
         </div>
     );

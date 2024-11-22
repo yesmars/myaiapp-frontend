@@ -40,6 +40,7 @@ function AppNavbar({ toggleSidebar, showSidebar }) {
             <LinkContainer to="/home">
             <Nav.Link className='nav-item' onClick={logout}>Logout</Nav.Link>
             </LinkContainer>
+             
           )}
           <LinkContainer to="/vanai">
             <Nav.Link className='nav-item'>Van-AI</Nav.Link>  
