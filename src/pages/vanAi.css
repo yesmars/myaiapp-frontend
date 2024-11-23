@@ -104,7 +104,7 @@ body, html {
     }
     .conversation-container {
         overflow-y: auto; /* Add this line */
-}
+    }
     .conversation-sidebar {
         z-index: 1000; /* Ensure sidebar is on top */
         transform: translateX(-100%); /* Initially hidden */
@@ -129,7 +129,9 @@ body, html {
         padding: 10px;
     }
   
-
+   .note-modal{
+    z-index: 1001;
+   }
     /* Sidebar toggle button on mobile */
     .toggle-sidebar {
         z-index: 110; /* Above the sidebar */
