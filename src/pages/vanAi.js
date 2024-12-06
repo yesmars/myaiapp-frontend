@@ -161,9 +161,6 @@ const VanAi = () => {
                     <NotesUI noteTitle={selectedNoteTitle} noteContent={selectedNoteContent} onClose={handleCloseNote} handleNoteUpdate={handleNoteUpdate} noteId={noteId}/> 
                     
                    )}
-                    
-               
-                
             <div ref={bottomRef} />
         </div>
     );

@@ -3,6 +3,7 @@ import { MdDelete } from "react-icons/md";
 
 import './Notesbar.css';
 const Notesbar = ({ allNoteTitles, handleNoteItemClick, handleNoteDelete }) => {
+    console.log("allNoteTitles :", allNoteTitles);
     return (
         <>
             <div className='note-bar-title'>
@@ -16,7 +17,10 @@ const Notesbar = ({ allNoteTitles, handleNoteItemClick, handleNoteDelete }) => {
                             <>
                             <li key={note.note_id} onClick={() => handleNoteItemClick(note)}>
                                 <div className='note-container'>
-                                <span className='note-bar-item'>{note.title}</span>
+                                <div className='note-content'>
+                                    <span className='note-bar-item'>{note.title}</span>
+                                    <span className='note-timestamp'>{note.timestamp}</span>
+                                </div>
                                 <button  className='note-bar-delete' onClick={()=>handleNoteDelete(note)} ><MdDelete /></button>
                                 </div>
                             </li>

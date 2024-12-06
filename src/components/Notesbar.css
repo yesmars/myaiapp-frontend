@@ -5,7 +5,7 @@
 }
 
 .note-bar-item {
-  display: flex;
+  display: block;
   justify-content: space-between;
   align-items: center;
   padding: 0.5em;
@@ -16,10 +16,21 @@
   background-color: #f9f9f9;
 }
 
+.note-timestamp {
+  display: block;
+  font-size: 0.8em;
+  color: gray;
+}
+
 .note-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.note-content {
+  display: flex;
+  flex-direction: column;
 }
 
 .note-bar-delete {
